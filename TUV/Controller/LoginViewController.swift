@@ -6,9 +6,12 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseAuth
 
 class LoginViewController: UIViewController {
     // MARK: Properties
+    private var dbReference: DatabaseReference!
     
     // MARK: Outlets
     @IBOutlet weak var usernameTextField: UITextField!
@@ -37,8 +40,18 @@ class LoginViewController: UIViewController {
             configureUi(loggingIn: false)
             presentErrorMessage(validationError)
         } else {
-            configureUi(loggingIn: false)
-            self.performSegue(withIdentifier: "loginSegue", sender: sender)
+            // TODO: Find user by username or email
+            
+            Auth.auth().signIn(withEmail: usernameTextField.text!, password: passwordTextField.text!) { result, error in
+                if error == nil {
+                    self.configureUi(loggingIn: false)
+                    self.performSegue(withIdentifier: "loginSegue", sender: sender)
+                } else {
+                    self.configureUi(loggingIn: false)
+                    self.presentErrorMessage(Constants.FormErrors.invalidLogin.message)
+                }
+            }
+            
         }
     }
     
@@ -72,15 +85,11 @@ class LoginViewController: UIViewController {
             return Constants.FormErrors.emptyPassword.message
         }
         
-        if sanitizedEmail == "email" && sanitizedPassword == "password" {
-            return nil
-        }
-        
-        return Constants.FormErrors.invalidLogin.message
+        return nil
     }
     
     func presentErrorMessage(_ message: String) {
-        let alertVC = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        let alertVC = UIAlertController(title: "Login Error", message: message, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         
         self.present(alertVC, animated: true, completion: nil)
