@@ -10,6 +10,7 @@ import UIKit
 
 class EmailVerificationViewController: UIViewController {
     // MARK: Properties
+    var userInfo: [String: String]!
     
     // MARK: Outlets
     @IBOutlet weak var verificationStatusLabel: UILabel!
@@ -26,6 +27,15 @@ class EmailVerificationViewController: UIViewController {
         resendLinkButton.isEnabled = false
         verifyButton.isEnabled = false
         nextButton.isEnabled = false
+        
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "verifyEmailNextSegue" {
+            let confirmSignupVC = segue.destination as! ConfirmSignupViewController
+            
+            confirmSignupVC.userInfo = self.userInfo
+        }
     }
     
     // MARK: Actions

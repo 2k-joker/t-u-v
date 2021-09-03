@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Firebase
 
 class SignupViewController: UIViewController {
     // MARK: Properties
@@ -25,6 +26,29 @@ class SignupViewController: UIViewController {
         super.viewWillAppear(animated)
         
         errorLabel.isHidden = true
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "signupNextSegue" {
+            let emailVerificationVC = segue.destination as! EmailVerificationViewController
+            
+            var mobileNumber: String {
+                if numberTextField.text!.isEmpty {
+                    return "N/A"
+                } else {
+                    return numberTextField.text!
+                }
+            }
+
+            let userInfo = [
+                "avatarName": "robot_avatar",
+                "mobileNumber": mobileNumber,
+                "email": emailTextField.text!,
+                "username": usernameTextField.text!,
+                "password": passwordTextField.text!,
+            ]
+            emailVerificationVC.userInfo = userInfo
+        }
     }
     
     // MARK: Actions
@@ -136,5 +160,6 @@ class SignupViewController: UIViewController {
         
         return !valid
     }
+
 }
 
