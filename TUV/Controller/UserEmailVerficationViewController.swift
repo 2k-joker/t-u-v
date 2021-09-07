@@ -74,8 +74,10 @@ class UserEmailVerificationViewController: UIViewController {
     }
 
     func presentConfirmationMessage(message: Constants.UIAlertMessage) {
+        let updateFailedMessage = Constants.UIAlertMessage.updateFailed
         let alertVC = UIAlertController(title: nil, message: message.description, preferredStyle: .alert)
-        if message == .updateFailed {
+        
+        if message.description == updateFailedMessage.description {
             alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: { action in
                 self.verifyButton.isEnabled = false
                 self.codeTextField.text?.removeAll()

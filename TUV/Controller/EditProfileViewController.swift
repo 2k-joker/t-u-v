@@ -101,9 +101,10 @@ class EditProfileViewController: UIViewController {
     }
     
     func presentMessage(message: Constants.UIAlertMessage) {
+        let  verifyEmailMessage = Constants.UIAlertMessage.verifyEmail
         let alertVC = UIAlertController(title: nil, message: message.description, preferredStyle: .alert)
    
-        if message == .verifyEmail {
+        if message.description == verifyEmailMessage.description {
             alertVC.addAction(UIAlertAction(title: "Continue", style: .default, handler: handleVerifyUserEmail(action:)))
             alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         } else {

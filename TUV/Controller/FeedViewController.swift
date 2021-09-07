@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     // MARK: Properties
+    fileprivate let user = Auth.auth().currentUser
     fileprivate var pageControl: UIPageControl = UIPageControl()
     private(set) lazy var feedChildViewControllers: [UIViewController?] = {
         return [
@@ -41,6 +43,20 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
         profileBarButton.tintColor = UIColor.white
         friendsBarButton.tintColor = UIColor.white
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+        case "profileSegue":
+            let profileVC = segue.destination as! ProfileViewController
+            
+            profileVC.user = user
+            
+        case "friendsSegue":
+            ()
+        default:
+            () // Do nothing
+        }
+    }
 
     // MARK: Actions
     @IBAction func profileTapped(_ sender: UIBarButtonItem) {
@@ -48,6 +64,7 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
     }
     
     @IBAction func friendsTapped(_ sender: UIBarButtonItem) {
+        
     }
     
     // MARK: Functions
@@ -95,4 +112,3 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
         return feedChildViewControllers[nextIndex]
     }
 }
-

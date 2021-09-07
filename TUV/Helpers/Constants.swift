@@ -32,7 +32,7 @@ class Constants {
         static let youtube = "YoutubeViewController"
     }
     
-    enum FormErrors: String {
+    enum FormErrors {
         case emptyEmail
         case emptyUsername
         case emptyPassword
@@ -41,7 +41,8 @@ class Constants {
         case invalidEmail
         case invalidMobileNumber
         case invalidUsername
-        case invalidLogin
+        case usernameTaken(String)
+        case unverifiedUsername
         case weakPassword
         case verifiedEmail
         case unverifiedEmail
@@ -64,8 +65,10 @@ class Constants {
                 return "Mobile number is invalid."
             case .invalidUsername:
                 return "Username should be between 4 to 20 characters."
-            case .invalidLogin:
-                return "Invalid username or password"
+            case .usernameTaken(let username):
+                return "\(username) is already taken."
+            case .unverifiedUsername:
+                return "Username verification failed. Please try again."
             case .weakPassword:
                 return "Password should be at least 8 characters, and contain uppercase, lowercase and special characters."
             case .verifiedEmail:
@@ -100,18 +103,44 @@ class Constants {
     }
     
     enum UIAlertMessage {
+        case authFailure(AuthType)
+        case invalidLogin
         case verifyEmail
         case updateSuccessful
         case updateFailed
+        case removeFriendFailed(String)
         
         var description: String {
             switch self {
+            case .authFailure(let authType):
+                return "Failed to \(authType.action)\nPlease check your connection and try again."
+            case .invalidLogin:
+                return "Invalid username or password"
             case .verifyEmail:
                 return "You have to verify your new email before it gets updated."
             case .updateSuccessful:
                 return "Update successful ✓"
             case .updateFailed:
                 return "Update failed ✗\nPlease try again.4"
+            case .removeFriendFailed(let friendUsername):
+                return "Failed to remove \(friendUsername).\nPlease check your connection and try again."
+            }
+        }
+    }
+    
+    enum AuthType {
+        case login
+        case logout
+        case signup
+        
+        var action: String {
+            switch self {
+            case .login:
+                return "log in user."
+            case .logout:
+                return "log out user."
+            case .signup:
+                return "complete sign up process."
             }
         }
     }

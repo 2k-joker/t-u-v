@@ -12,7 +12,7 @@ import FirebaseAuth
 class LoginViewController: UIViewController {
     // MARK: Properties
     private var dbReference: DatabaseReference!
-    
+
     // MARK: Outlets
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
@@ -29,34 +29,50 @@ class LoginViewController: UIViewController {
         super.viewWillAppear(animated)
         
         signupButton.setTitleColor(.lightGray, for: .disabled)
-        configureUi(loggingIn: false)
+        passwordTextField.text?.removeAll()
+        configureUI(loggingIn: false)
     }
 
     // MARK: Actions
     @IBAction func loginTapped(_ sender: UIButton) {
-        configureUi(loggingIn: true)
+        configureUI(loggingIn: true)
 
         if let validationError = validateLoginCreds() {
-            configureUi(loggingIn: false)
+            configureUI(loggingIn: false)
             presentErrorMessage(validationError)
         } else {
             // TODO: Find user by username or email
+            dbReference = Database.database().reference()
+            let userPath = "users/\(usernameTextField.text!)"
             
-            Auth.auth().signIn(withEmail: usernameTextField.text!, password: passwordTextField.text!) { result, error in
-                if error == nil {
-                    self.configureUi(loggingIn: false)
-                    self.performSegue(withIdentifier: "loginSegue", sender: sender)
+            dbReference.child(userPath).getData { error, snapshot in
+                if error != nil {
+                    self.presentErrorMessage(Constants.UIAlertMessage.authFailure(.login).description)
+                } else if snapshot.exists() {
+                    let userInfo = snapshot.value as! [String:Any]
+                    let userEmail = userInfo["email"] as! String
+                    
+                    self.loginUser(email: userEmail)
                 } else {
-                    self.configureUi(loggingIn: false)
-                    self.presentErrorMessage(Constants.FormErrors.invalidLogin.message)
+                    self.presentErrorMessage(Constants.UIAlertMessage.invalidLogin.description)
                 }
             }
-            
         }
     }
-    
+
     // MARK: Functions
-    func configureUi(loggingIn: Bool) {
+    func loginUser(email: String) {
+        Auth.auth().signIn(withEmail: email, password: passwordTextField.text!) { result, error in
+            if error == nil {
+                self.configureUI(loggingIn: false)
+                self.performSegue(withIdentifier: "loginSegue", sender: nil)
+            } else {
+                self.presentErrorMessage(Constants.UIAlertMessage.authFailure(.login).description)
+            }
+        }
+    }
+
+    func configureUI(loggingIn: Bool) {
         usernameTextField.isEnabled = !loggingIn
         passwordTextField.isEnabled = !loggingIn
         loginButton.isEnabled = !loggingIn
@@ -90,9 +106,10 @@ class LoginViewController: UIViewController {
     
     func presentErrorMessage(_ message: String) {
         let alertVC = UIAlertController(title: "Login Error", message: message, preferredStyle: .alert)
-        alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+            self.configureUI(loggingIn: false)
+        }))
         
         self.present(alertVC, animated: true, completion: nil)
     }
 }
-

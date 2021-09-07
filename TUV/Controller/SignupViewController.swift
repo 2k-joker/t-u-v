@@ -12,6 +12,7 @@ class SignupViewController: UIViewController {
     // MARK: Properties
     
     // MARK: Outlets
+    @IBOutlet weak var formStackView: UIStackView!
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var numberTextField: UITextField!
     @IBOutlet weak var usernameTextField: UITextField!
@@ -20,12 +21,14 @@ class SignupViewController: UIViewController {
     @IBOutlet var hideShowButton: [UIButton]!
     @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     // MARK: View States
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         errorLabel.isHidden = true
+        nextButton.setTitleColor(.lightGray, for: .disabled)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -77,7 +80,28 @@ class SignupViewController: UIViewController {
         if isInvalidInput(input: sender.text, type: .username) {
             updateErrorLabel(Constants.FormErrors.invalidUsername.message)
         } else {
-            updateErrorLabel()
+            configureUserInteraction(busy: true)
+            
+            Database.database().reference().child("users/\(sender.text!)").getData { error, snapshot in
+                if error != nil {
+                    DispatchQueue.main.async {
+                        self.configureUserInteraction(busy: false)
+                        self.updateErrorLabel(Constants.FormErrors.unverifiedUsername.message
+                        )
+                        sender.text!.removeAll()
+                    }
+
+                } else if snapshot.exists() {
+                    DispatchQueue.main.async {
+                        self.configureUserInteraction(busy: false)
+                        self.updateErrorLabel(Constants.FormErrors.usernameTaken(sender.text!).message)
+                        sender.text!.removeAll()
+                    }
+                } else {
+                    self.configureUserInteraction(busy: false)
+                    self.updateErrorLabel()
+                }
+            }
         }
     }
     
@@ -114,6 +138,13 @@ class SignupViewController: UIViewController {
     }
     
     // MARK: Functions
+    func configureUserInteraction(busy: Bool) {
+        formStackView.isUserInteractionEnabled = !busy
+        nextButton.isEnabled = !busy
+        
+        busy ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
+    }
+
     func configureHideShowButton(textField: UITextField, button: UIButton) {
         if textField.isSecureTextEntry {
             textField.isSecureTextEntry = false

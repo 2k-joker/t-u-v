@@ -60,27 +60,28 @@ class ConfirmSignupViewController: UIViewController {
     }
     
     func createUser() {
-        Auth.auth().createUser(withEmail: userInfo!["email"]!, password: userInfo!["password"]!) { result, error in
+        Auth.auth().createUser(withEmail: userInfo["email"]!, password: userInfo["password"]!) { result, error in
             if error != nil {
                 self.presentSignupError()
             } else {
                 let dbReference = Database.database().reference()
                 let userData = [
-                    "username": self.userInfo!["username"],
-                    "avatarName": self.userInfo!["avatarName"],
-                    "phoneNumber": self.userInfo!["mobileNumber"]
+                    "uid": result!.user.uid,
+                    "email": self.userInfo["email"],
+                    "avatarName": self.userInfo["avatarName"],
+                    "phoneNumber": self.userInfo["mobileNumber"]
                 ]
 
-                dbReference.child("users").child(result!.user.uid).setValue(userData)
+                dbReference.child("users/\(self.userInfo["username"]!)").setValue(userData)
                 
                 self.configureUI(signingUp: false)
                 self.performSegue(withIdentifier: "confirmSignupSegue", sender: nil)
             }
         }
     }
-    
+
     func presentSignupError() {
-        let alertMessage = "Unable to complete sign up process.\nPlease check your conection and try again."
+        let alertMessage = Constants.UIAlertMessage.authFailure(.signup).description
         let alertVC = UIAlertController(title: "Failed", message: alertMessage, preferredStyle: .alert)
         
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in

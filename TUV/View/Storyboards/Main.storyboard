@@ -263,6 +263,10 @@
                                     <action selector="nextTapped:" destination="7iG-nr-G7N" eventType="touchUpInside" id="DcW-E3-v0X"/>
                                 </connections>
                             </button>
+                            <activityIndicatorView hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="bn9-rP-rlG">
+                                <rect key="frame" x="188.5" y="434.5" width="37" height="37"/>
+                                <color key="color" red="0.60349265929999996" green="0.25484644020000002" blue="0.84267407660000004" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Ny4-e2-2BI"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -273,8 +277,10 @@
                             <constraint firstItem="E2I-sn-fM0" firstAttribute="leading" secondItem="Ny4-e2-2BI" secondAttribute="leading" constant="20" id="Gt4-Oi-J2J"/>
                             <constraint firstItem="3hO-is-LzL" firstAttribute="top" secondItem="E2I-sn-fM0" secondAttribute="bottom" constant="16" id="Jmt-Q0-Zak"/>
                             <constraint firstItem="t0r-XT-SVg" firstAttribute="leading" secondItem="Ny4-e2-2BI" secondAttribute="leading" constant="304" id="Jvh-gl-3F4"/>
+                            <constraint firstItem="bn9-rP-rlG" firstAttribute="centerY" secondItem="Ny4-e2-2BI" secondAttribute="centerY" id="MIF-Ok-0hC"/>
                             <constraint firstItem="O38-Dk-cyV" firstAttribute="top" secondItem="YZG-93-2CZ" secondAttribute="bottom" constant="10" id="P7c-w9-9Se"/>
                             <constraint firstItem="ds1-Kw-QEW" firstAttribute="centerX" secondItem="Ny4-e2-2BI" secondAttribute="centerX" id="UMN-rf-pJQ"/>
+                            <constraint firstItem="bn9-rP-rlG" firstAttribute="centerX" secondItem="Ny4-e2-2BI" secondAttribute="centerX" id="ZL3-wC-br7"/>
                             <constraint firstItem="3hO-is-LzL" firstAttribute="centerX" secondItem="Ny4-e2-2BI" secondAttribute="centerX" id="guv-sC-ZXs"/>
                             <constraint firstItem="t0r-XT-SVg" firstAttribute="top" secondItem="Ny4-e2-2BI" secondAttribute="top" constant="20" id="lrH-cf-NDk"/>
                             <constraint firstItem="Ny4-e2-2BI" firstAttribute="trailing" secondItem="E2I-sn-fM0" secondAttribute="trailing" constant="20" id="nRA-be-Hz6"/>
@@ -285,9 +291,11 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="bn9-rP-rlG" id="HB4-m5-g3t"/>
                         <outlet property="confirmPasswordTextField" destination="p38-jQ-zxA" id="YaU-U3-OI3"/>
                         <outlet property="emailTextField" destination="o6c-oX-vm9" id="H86-7O-LG6"/>
                         <outlet property="errorLabel" destination="3hO-is-LzL" id="Ii7-pa-J4x"/>
+                        <outlet property="formStackView" destination="E2I-sn-fM0" id="wQH-wA-KP1"/>
                         <outlet property="nextButton" destination="ds1-Kw-QEW" id="h8c-Mq-M1Q"/>
                         <outlet property="numberTextField" destination="MqI-JN-g5M" id="s2B-ds-oXD"/>
                         <outlet property="passwordTextField" destination="ic4-Vu-IAI" id="RFO-7k-wWj"/>
@@ -713,25 +721,31 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="joi-lg-yef">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="253"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="250"/>
                                 <color key="backgroundColor" red="0.96848052740097046" green="0.87097177789202807" blue="0.11273704339165107" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             </view>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="robot_avatar" translatesAutoresizingMaskIntoConstraints="NO" id="AY4-v2-ch0">
-                                <rect key="frame" x="132" y="173" width="150" height="150"/>
+                                <rect key="frame" x="147" y="180" width="120" height="120"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="150" id="WGR-RU-sM6"/>
-                                    <constraint firstAttribute="height" constant="150" id="XxC-bX-XPa"/>
+                                    <constraint firstAttribute="width" constant="120" id="WGR-RU-sM6"/>
+                                    <constraint firstAttribute="height" constant="120" id="XxC-bX-XPa"/>
                                 </constraints>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FjI-JJ-aeO">
+                                <rect key="frame" x="185.5" y="305" width="43.5" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yTt-s1-XX0" userLabel="Edit Profile Button">
-                                <rect key="frame" x="119.5" y="342" width="175" height="32.5"/>
+                                <rect key="frame" x="119.5" y="335.5" width="175" height="32.5"/>
                                 <state key="normal" image="edit_profile"/>
                                 <connections>
                                     <action selector="editProfileTapped:" destination="1NC-Tl-0Jo" eventType="touchUpInside" id="tJ3-39-WZl"/>
                                 </connections>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="iSF-lJ-cFd">
-                                <rect key="frame" x="20" y="406.5" width="374" height="70"/>
+                                <rect key="frame" x="20" y="418" width="374" height="70"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Hkq-ye-Z9F" userLabel="Friends">
                                         <rect key="frame" x="0.0" y="0.0" width="182" height="70"/>
@@ -753,7 +767,7 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="PLn-7m-Vy0" userLabel="Accounts">
                                         <rect key="frame" x="192" y="0.0" width="182" height="70"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Accounts" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YEj-SN-1He">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Apps" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YEj-SN-1He">
                                                 <rect key="frame" x="0.0" y="0.0" width="182" height="30"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="25"/>
                                                 <nil key="textColor"/>
@@ -770,18 +784,21 @@
                                 </subviews>
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ppz-8P-D7j">
-                                <rect key="frame" x="127" y="526.5" width="160" height="35"/>
+                                <rect key="frame" x="127" y="538" width="160" height="35"/>
                                 <state key="normal" image="connect_apps_button"/>
                                 <connections>
                                     <action selector="connectAppsTapped:" destination="1NC-Tl-0Jo" eventType="touchUpInside" id="Bxw-4d-05D"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ejh-KH-cDV">
-                                <rect key="frame" x="127" y="576.5" width="160" height="35"/>
+                                <rect key="frame" x="127" y="588" width="160" height="35"/>
                                 <state key="normal" image="remove_friend_button"/>
+                                <connections>
+                                    <action selector="removeFriendTapped:" destination="1NC-Tl-0Jo" eventType="touchUpInside" id="joz-Gc-jxt"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dny-v6-dTH" userLabel="Log Out Button">
-                                <rect key="frame" x="100" y="679" width="214" height="49"/>
+                                <rect key="frame" x="100" y="709" width="214" height="49"/>
                                 <state key="normal" image="log_out_button">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
@@ -794,34 +811,37 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="ejh-KH-cDV" firstAttribute="centerX" secondItem="paw-aq-62s" secondAttribute="centerX" id="0xE-zo-Qln"/>
-                            <constraint firstItem="yTt-s1-XX0" firstAttribute="top" secondItem="AY4-v2-ch0" secondAttribute="bottom" constant="19" id="62y-ys-lig"/>
-                            <constraint firstItem="AY4-v2-ch0" firstAttribute="top" secondItem="paw-aq-62s" secondAttribute="top" constant="173" id="6G0-sj-uCW"/>
+                            <constraint firstItem="AY4-v2-ch0" firstAttribute="top" secondItem="paw-aq-62s" secondAttribute="top" constant="180" id="6G0-sj-uCW"/>
                             <constraint firstItem="AY4-v2-ch0" firstAttribute="centerX" secondItem="paw-aq-62s" secondAttribute="centerX" id="7ca-fP-YmI"/>
                             <constraint firstItem="ejh-KH-cDV" firstAttribute="top" secondItem="iSF-lJ-cFd" secondAttribute="bottom" constant="100" id="C3X-Qe-i6e"/>
                             <constraint firstItem="joi-lg-yef" firstAttribute="leading" secondItem="paw-aq-62s" secondAttribute="leading" id="FbT-sE-Sw9"/>
                             <constraint firstItem="iSF-lJ-cFd" firstAttribute="leading" secondItem="paw-aq-62s" secondAttribute="leading" constant="20" id="HUD-0t-Usx"/>
-                            <constraint firstItem="iSF-lJ-cFd" firstAttribute="top" secondItem="yTt-s1-XX0" secondAttribute="bottom" constant="32" id="KRj-6e-SY0"/>
+                            <constraint firstItem="iSF-lJ-cFd" firstAttribute="top" secondItem="yTt-s1-XX0" secondAttribute="bottom" constant="50" id="KRj-6e-SY0"/>
                             <constraint firstItem="ppz-8P-D7j" firstAttribute="centerX" secondItem="paw-aq-62s" secondAttribute="centerX" id="NoV-PN-Qo2"/>
+                            <constraint firstItem="yTt-s1-XX0" firstAttribute="top" secondItem="FjI-JJ-aeO" secondAttribute="bottom" constant="10" id="TN5-O2-KHj"/>
                             <constraint firstItem="paw-aq-62s" firstAttribute="trailing" secondItem="iSF-lJ-cFd" secondAttribute="trailing" constant="20" id="ThP-KS-N2y"/>
                             <constraint firstItem="yTt-s1-XX0" firstAttribute="centerX" secondItem="paw-aq-62s" secondAttribute="centerX" id="UnC-4p-jrP"/>
                             <constraint firstItem="dny-v6-dTH" firstAttribute="leading" secondItem="paw-aq-62s" secondAttribute="leading" constant="100" id="XXY-Vz-XEZ"/>
                             <constraint firstItem="paw-aq-62s" firstAttribute="trailing" secondItem="dny-v6-dTH" secondAttribute="trailing" constant="100" id="bPd-cu-iMa"/>
-                            <constraint firstItem="AY4-v2-ch0" firstAttribute="top" secondItem="joi-lg-yef" secondAttribute="bottom" constant="-80" id="mCN-Jn-lZm"/>
+                            <constraint firstItem="AY4-v2-ch0" firstAttribute="top" secondItem="joi-lg-yef" secondAttribute="bottom" constant="-70" id="mCN-Jn-lZm"/>
                             <constraint firstItem="joi-lg-yef" firstAttribute="top" secondItem="paw-aq-62s" secondAttribute="top" id="pht-uZ-ZGa"/>
-                            <constraint firstItem="paw-aq-62s" firstAttribute="bottom" secondItem="dny-v6-dTH" secondAttribute="bottom" constant="80" id="uPj-1Z-Au5"/>
+                            <constraint firstItem="FjI-JJ-aeO" firstAttribute="top" secondItem="AY4-v2-ch0" secondAttribute="bottom" constant="5" id="rDC-gh-L8p"/>
+                            <constraint firstItem="paw-aq-62s" firstAttribute="bottom" secondItem="dny-v6-dTH" secondAttribute="bottom" constant="50" id="uPj-1Z-Au5"/>
                             <constraint firstItem="ppz-8P-D7j" firstAttribute="top" secondItem="iSF-lJ-cFd" secondAttribute="bottom" constant="50" id="uyW-wh-rfp"/>
+                            <constraint firstItem="FjI-JJ-aeO" firstAttribute="centerX" secondItem="paw-aq-62s" secondAttribute="centerX" id="xrW-CF-3N7"/>
                             <constraint firstItem="paw-aq-62s" firstAttribute="trailing" secondItem="joi-lg-yef" secondAttribute="trailing" id="y6V-CH-5Ez"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="vhi-8R-Xxk"/>
                     <connections>
-                        <outlet property="accountsLabel" destination="sUj-Yk-JkB" id="6Jq-kn-3vl"/>
+                        <outlet property="appsLabel" destination="sUj-Yk-JkB" id="6Jq-kn-3vl"/>
                         <outlet property="connectAppsButton" destination="ppz-8P-D7j" id="VK7-g2-GcN"/>
                         <outlet property="editProfileButton" destination="yTt-s1-XX0" id="Qvu-02-fpN"/>
                         <outlet property="friendsLabel" destination="ZmV-4J-EwE" id="PCR-G9-AGU"/>
                         <outlet property="logOutButton" destination="dny-v6-dTH" id="f2L-HH-HOq"/>
                         <outlet property="profileImageView" destination="AY4-v2-ch0" id="7gu-bs-9Ug"/>
                         <outlet property="removeFriendButton" destination="ejh-KH-cDV" id="Kwk-Ah-B8R"/>
+                        <outlet property="usernameLabel" destination="FjI-JJ-aeO" id="Tmz-zy-yKU"/>
                         <segue destination="Wgo-qW-DqX" kind="presentation" identifier="logoutSegue" modalPresentationStyle="fullScreen" modalTransitionStyle="crossDissolve" id="RFr-IV-pMp"/>
                         <segue destination="tdn-tK-yBC" kind="presentation" identifier="editProfileSegue" modalPresentationStyle="fullScreen" id="cbH-Qb-JVP"/>
                         <segue destination="0po-Iz-Sqm" kind="presentation" identifier="connectAppsSegue" modalPresentationStyle="fullScreen" id="XDA-nR-OSF"/>
@@ -931,7 +951,7 @@
                         <barButtonItem key="leftBarButtonItem" title="profile" image="person.circle.fill" catalog="system" id="Gli-1D-mWo">
                             <connections>
                                 <action selector="profileTapped:" destination="okq-oh-su2" id="aFQ-Nj-wZ6"/>
-                                <segue destination="1NC-Tl-0Jo" kind="popoverPresentation" popoverAnchorBarButtonItem="Gli-1D-mWo" id="2lP-Re-MZt">
+                                <segue destination="1NC-Tl-0Jo" kind="popoverPresentation" identifier="profileSegue" popoverAnchorBarButtonItem="Gli-1D-mWo" id="2lP-Re-MZt">
                                     <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES"/>
                                 </segue>
                             </connections>
@@ -939,7 +959,7 @@
                         <barButtonItem key="rightBarButtonItem" title="Item" image="person.2.square.stack.fill" catalog="system" id="c2m-SV-qkt">
                             <connections>
                                 <action selector="friendsTapped:" destination="okq-oh-su2" id="lfP-cc-1Nx"/>
-                                <segue destination="6SJ-J7-vR3" kind="show" id="aM9-OE-Nhf"/>
+                                <segue destination="6SJ-J7-vR3" kind="show" identifier="friendsSegue" id="aM9-OE-Nhf"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -1809,11 +1829,10 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="lX8-ha-BvL"/>
         <segue reference="PVI-AR-oLP"/>
         <segue reference="XDA-nR-OSF"/>
         <segue reference="mLZ-V1-qtr"/>
-        <segue reference="K6h-Wa-OOR"/>
+        <segue reference="2lP-Re-MZt"/>
         <segue reference="cbH-Qb-JVP"/>
         <segue reference="O0L-DR-tiX"/>
         <segue reference="RFr-IV-pMp"/>
