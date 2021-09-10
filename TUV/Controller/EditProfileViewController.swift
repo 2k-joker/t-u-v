@@ -5,14 +5,18 @@
 //  Created by Khalil Kum on 8/22/21.
 //
 
-import Foundation
 import UIKit
+import FirebaseAuth
+import FirebaseDatabase
 
 class EditProfileViewController: UIViewController {
     // MARK: Properties
-    let updateAvatarSegue = "updateAvatarSegue"
-    let verfifyEmailSegue = "verifyEmailSegue"
-    
+    var userInfo: [String:Any]!
+    fileprivate let currentUser = Auth.auth().currentUser!
+    fileprivate let dbReference = Database.database().reference()
+    fileprivate let updateAvatarSegue = "updateAvatarSegue"
+    fileprivate let verfifyEmailSegue = "verifyEmailSegue"
+
     // MARK: Outlets
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var userProfileImage: UIImageView!
@@ -28,10 +32,16 @@ class EditProfileViewController: UIViewController {
     @IBOutlet weak var saveButton: UIButton!
 
     // MARK: View States
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
-        displayUserAvatar()
+        retrieveUserInfo()
+        displayUserInfo()
         errorLabel.isHidden = true
     }
 
@@ -65,11 +75,12 @@ class EditProfileViewController: UIViewController {
             updateErrorLabel(validationError)
             configureUI(saving: false)
         } else {
-            if !emailTextField.text!.isEmpty {
+            if (!emailTextField.text!.isEmpty) && (emailTextField.text! != currentUser.email) {
                 configureUI(saving: false)
                 presentMessage(message: .verifyEmail)
             } else {
                 // Save changes
+                saveProfileUpdate()
                 configureUI(saving: false)
                 presentMessage(message: .updateSuccessful)
             }
@@ -77,16 +88,53 @@ class EditProfileViewController: UIViewController {
     }
     
     // MARK: Functions
-    func displayUserAvatar() {
-        // TODO: Get user avatar name
-        let userAvatarName = ""
+    func saveProfileUpdate() {
+        var updates: [String:String] = [:]
+        let basePath = "users/\(currentUser.uid)"
         
-        if userAvatarName.isEmpty {
-            userProfileImage.image = UIImage(named: "robot_avatar")
-        } else {
-            userProfileImage.image = UIImage(named: userAvatarName)
+        if !usernameTextField.text!.isEmpty {
+            updates["\(basePath)/username"] = usernameTextField.text
+        }
+        
+        if !mobileNumberTextField.text!.isEmpty {
+            updates["\(basePath)/mobileNumber"] = mobileNumberTextField.text
+        }
+        
+        if !passwordTextField.text!.isEmpty {
+            updateUserPassword(passwordTextField.text!)
+        }
+        
+        dbReference.updateChildValues(updates) { error, reference in
+            if error != nil {
+                debugPrint(error.debugDescription)
+                self.presentMessage(message: .updateFailed)
+            }
         }
     }
+
+    func retrieveUserInfo() {
+        dbReference.child("users/\(currentUser.uid)").getData { error, snapshot in
+            if snapshot.exists() {
+                self.userInfo = snapshot.value as? [String:Any]
+            } else {
+                debugPrint(error.debugDescription)
+            }
+        }
+    }
+    
+    func displayUserInfo() {
+        // TODO: Get user avatar name
+        let avatarName = userInfo["avatarName"] as! String
+        let username = userInfo["username"] as! String
+        let email = userInfo["email"] as! String
+        let mobileNumber = userInfo["mobileNumber"] as! String
+        
+        userProfileImage.image = UIImage(named: avatarName)
+        usernameTextField.text = username
+        emailTextField.text = email
+        mobileNumberTextField.text = mobileNumber
+    }
+
     func configureUI(saving: Bool) {
         updateAvatar.isEnabled = !saving
         userInfoStackView.isUserInteractionEnabled = !saving
@@ -98,6 +146,14 @@ class EditProfileViewController: UIViewController {
     func updateErrorLabel(_ labelMessage: String = "") {
         errorLabel.text = labelMessage
         errorLabel.isHidden = labelMessage.isEmpty
+    }
+    
+    func updateUserPassword(_ password: String) {
+        currentUser.updatePassword(to: password) { error in
+            if error != nil {
+                self.presentMessage(message: .authFailure(.updatePassword))
+            }
+        }
     }
     
     func presentMessage(message: Constants.UIAlertMessage) {
@@ -117,7 +173,8 @@ class EditProfileViewController: UIViewController {
     }
 
     func handleVerifyUserEmail(action: UIAlertAction) {
-        // TODO: save changes (without email)
+        // save changes (without email)
+        saveProfileUpdate()
         
         self.performSegue(withIdentifier: verfifyEmailSegue, sender: action)
         resetUserInfoForm()
@@ -132,16 +189,14 @@ class EditProfileViewController: UIViewController {
     }
     
     func resetUserInfoForm() {
-        usernameTextField.text?.removeAll()
         usernameTextField.endEditing(true)
-        emailTextField.text?.removeAll()
         emailTextField.endEditing(true)
-        mobileNumberTextField.text?.removeAll()
         mobileNumberTextField.endEditing(true)
         passwordTextField.text?.removeAll()
         passwordTextField.endEditing(true)
         confirmPasswordTextField.text?.removeAll()
         confirmPasswordTextField.endEditing(true)
+        errorLabel.isHidden = true
     }
     
     func validateUserInfoForm() -> String? {
@@ -155,7 +210,7 @@ class EditProfileViewController: UIViewController {
             return Constants.FormErrors.invalidEmail.message
         }
         
-        guard isValidInput(input: mobileNumberTextField.text, type: .mobileNumber) else {
+        guard isValidInput(input: mobileNumberTextField.text, type: .mobileNumber) || mobileNumberTextField.text! == "N/A" else {
             return Constants.FormErrors.invalidMobileNumber.message
         }
         
@@ -169,4 +224,6 @@ class EditProfileViewController: UIViewController {
         
         return nil
     }
+    
+    // TODO: Add a listener to update avatar when changes occur
 }

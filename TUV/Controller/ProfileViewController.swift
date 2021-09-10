@@ -38,6 +38,18 @@ class ProfileViewController: UIViewController {
 
         configureProfile()
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier {
+        case "editProfileSegue":
+            let editProfileVC = segue.destination as! EditProfileViewController
+            editProfileVC.userInfo = userInfo
+        case "connectAppsSegue":
+            ()
+        default:
+            () // Do nothing
+        }
+    }
 
     // MARK: Actions
     @IBAction func editProfileTapped(_ sender: UIButton) {

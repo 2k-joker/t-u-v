@@ -132,6 +132,8 @@ class Constants {
         case login
         case logout
         case signup
+        case updatePassword
+        case updateEmail
         
         var action: String {
             switch self {
@@ -141,6 +143,10 @@ class Constants {
                 return "log out user."
             case .signup:
                 return "complete sign up process."
+            case .updatePassword:
+                return "update password."
+            case .updateEmail:
+                return "update email."
             }
         }
     }

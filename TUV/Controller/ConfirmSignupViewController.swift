@@ -69,7 +69,7 @@ class ConfirmSignupViewController: UIViewController {
                     "username": self.userInfo["username"],
                     "email": self.userInfo["email"],
                     "avatarName": self.userInfo["avatarName"],
-                    "phoneNumber": self.userInfo["mobileNumber"]
+                    "mobileNumber": self.userInfo["mobileNumber"]
                 ]
 
                 dbReference.child("users/\(result!.user.uid)").setValue(userData)

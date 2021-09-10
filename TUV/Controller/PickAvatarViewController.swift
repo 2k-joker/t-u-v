@@ -5,8 +5,9 @@
 //  Created by Khalil Kum on 8/22/21.
 //
 
-import Foundation
 import UIKit
+import FirebaseAuth
+import FirebaseDatabase
 
 class PickAvatarViewController: UIViewController {
     // MARK: Properties
@@ -47,7 +48,11 @@ class PickAvatarViewController: UIViewController {
     // MARK: Actions
     @IBAction func selectTapped(_ sender: UIButton) {
         // TODO: Update current user's image
-        dismiss(animated: true, completion: nil)
+        let currentUser = Auth.auth().currentUser
+        if let currentUser = currentUser {
+            let update = ["users/\(currentUser.uid)/avatarName": currentAvatarName]
+            updateUserAvatar(update)
+        }
     }
     
     // MARK: Functions
@@ -56,6 +61,24 @@ class PickAvatarViewController: UIViewController {
         
         flowLayout.minimumInteritemSpacing = space
         flowLayout.minimumLineSpacing = space
+    }
+    
+    func updateUserAvatar(_ update: [String:String]) {
+        Database.database().reference().updateChildValues(update) { error, reference in
+            if error != nil {
+                self.presentMessage(message: .updateFailed)
+            } else {
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
+    }
+    
+    func presentMessage(message: Constants.UIAlertMessage) {
+        let alertVC = UIAlertController(title: nil, message: message.description, preferredStyle: .alert)
+
+        alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+        
+        self.present(alertVC, animated: true, completion: nil)
     }
 }
 
@@ -72,7 +95,8 @@ extension PickAvatarViewController: UICollectionViewDelegate, UICollectionViewDa
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        avatarPreviewImageView.image = UIImage(named: avatarNames[indexPath.row])
+        currentAvatarName = avatarNames[indexPath.row]
+        avatarPreviewImageView.image = UIImage(named: currentAvatarName)
         selectAvatarButton.isEnabled = true
     }
 }
