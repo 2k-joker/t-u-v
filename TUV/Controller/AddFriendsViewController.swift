@@ -36,7 +36,7 @@ class AddFriendsViewController: UIViewController, ButtonDelegate {
         print("add friend tapped")
     }
 
-    func imageButtonTapped(_ button: UIButton) {
+    func profileImageTapped(_ button: UIButton, touchPoint: CGPoint?) {
         self.performSegue(withIdentifier: "addFriendProfileSegue", sender: button)
     }
 }
@@ -77,7 +77,7 @@ extension AddFriendsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = friendsTableView.dequeueReusableCell(withIdentifier: AddFriendCell.reuseIdentifier, for: indexPath) as! AddFriendCell
         
-        cell.buttonDelegate = self
+        cell.tapDelegate = self
         cell.friendImageView.image = UIImage(named: "robot_avatar")
         cell.usernameLabel.text = friends[indexPath.section][indexPath.row]
         cell.detailsLabel.text = "Twitter, Instagram"

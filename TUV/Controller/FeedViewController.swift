@@ -7,10 +7,12 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseDatabase
 
 class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     // MARK: Properties
-    fileprivate let user = Auth.auth().currentUser
+    fileprivate let currentUser = Auth.auth().currentUser!
+    fileprivate var currentUserFriends: [String]?
     fileprivate var pageControl: UIPageControl = UIPageControl()
     private(set) lazy var feedChildViewControllers: [UIViewController?] = {
         return [
@@ -40,8 +42,11 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         profileBarButton.tintColor = UIColor.white
         friendsBarButton.tintColor = UIColor.white
+        friendsBarButton.isEnabled = false
+        getCurrentUserFriends()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -49,10 +54,12 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
         case "profileSegue":
             let profileVC = segue.destination as! ProfileViewController
             
-            profileVC.user = user
+            profileVC.userUid = currentUser.uid
             
         case "friendsSegue":
-            ()
+            let friendsVC = segue.destination as! FriendsViewController
+            
+            friendsVC.addedFriends = currentUserFriends ?? []
         default:
             () // Do nothing
         }
@@ -64,10 +71,26 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
     }
     
     @IBAction func friendsTapped(_ sender: UIBarButtonItem) {
-        
+        self.performSegue(withIdentifier: "friendsSegue", sender: sender)
     }
     
     // MARK: Functions
+    func getCurrentUserFriends() {
+        Database.database().reference().child("users/\(currentUser.uid)/addedFriends").getData { error, snapshot in
+            if error != nil {
+                debugPrint("Error getting user's friends: \(error.debugDescription)")
+                self.friendsBarButton.isEnabled = true
+            } else if snapshot.exists() {
+                let snapshotData = snapshot.value as! [String:Bool]
+
+                self.currentUserFriends = snapshotData.keys.map { $0 }
+                self.friendsBarButton.isEnabled = true
+            } else {
+                self.friendsBarButton.isEnabled = true
+            }
+        }
+    }
+
     private func newChildViewController(storyboardId: String) -> UIViewController {
         return storyboard!.instantiateViewController(withIdentifier: storyboardId)
     }

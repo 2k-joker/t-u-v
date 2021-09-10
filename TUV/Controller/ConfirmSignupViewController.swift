@@ -66,16 +66,18 @@ class ConfirmSignupViewController: UIViewController {
             } else {
                 let dbReference = Database.database().reference()
                 let userData = [
-                    "uid": result!.user.uid,
+                    "username": self.userInfo["username"],
                     "email": self.userInfo["email"],
                     "avatarName": self.userInfo["avatarName"],
                     "phoneNumber": self.userInfo["mobileNumber"]
                 ]
 
-                dbReference.child("users/\(self.userInfo["username"]!)").setValue(userData)
+                dbReference.child("users/\(result!.user.uid)").setValue(userData)
                 
-                self.configureUI(signingUp: false)
-                self.performSegue(withIdentifier: "confirmSignupSegue", sender: nil)
+                DispatchQueue.main.async {
+                    self.configureUI(signingUp: false)
+                    self.performSegue(withIdentifier: "confirmSignupSegue", sender: nil)
+                }
             }
         }
     }

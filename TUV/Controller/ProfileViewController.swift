@@ -11,7 +11,8 @@ import FirebaseDatabase
 
 class ProfileViewController: UIViewController {
     // MARK: Properties
-    var user: User!
+    var userUid: String = ""
+    fileprivate let activeUser = Auth.auth().currentUser
     fileprivate var userInfo: [String:Any]!
     fileprivate var dbReference: DatabaseReference = Database.database().reference()
 
@@ -63,51 +64,32 @@ class ProfileViewController: UIViewController {
     }
 
     @IBAction func removeFriendTapped(_ sender: UIButton) {
-        if let currentUser = Auth.auth().currentUser {
-            dbReference.child("users").queryOrdered(byChild: "uid").queryEqual(toValue: currentUser.uid).queryLimited(toFirst: 1).getData { error, snapshot in
-                if error != nil {
-                    DispatchQueue.main.sync {
-                        self.presentErrorMessage(Constants.UIAlertMessage.removeFriendFailed(self.usernameLabel.text!).description)
-                    }
-                } else {
-                    let currentUserObject = snapshot.value as! [String:Any]
-                    let currentUsername = currentUserObject.first!.key
-                    self.dbReference.child("users/\(currentUsername)/addedFriends/\(self.usernameLabel.text!)").removeValue()
-                }
-            }
-            
+        if let currentUser = activeUser {
+            dbReference.child("users/\(currentUser.uid)/addedFriends/\(self.usernameLabel.text!)").removeValue()
             self.dismiss(animated: true, completion: nil)
         }
     }
 
     // MARK: Functions
     func getUserInfo() {
-        dbReference.child("users").queryOrdered(byChild: "uid").queryEqual(toValue: user.uid).queryLimited(toFirst: 1).getData { error, snapshot in
+        dbReference.child("users/\(userUid)").getData { error, snapshot in
             if snapshot.exists() {
-                DispatchQueue.main.async {
-                    let userObject = snapshot.value as! [String:Any]
-                    let username = userObject.keys.first!
-                    
-                    self.userInfo = (userObject[username] as! [String:Any])
-                    self.userInfo["username"] = username
-                    self.populateUserData()
-                }
+                self.userInfo = (snapshot.value as! [String:Any])
+                self.populateUserData()
             } else {
-                DispatchQueue.main.async {
-                    self.userInfo = [:]
-                    self.populateUserData()
-                }
+                self.userInfo = [:]
+                self.populateUserData()
             }
         }
     }
     
     func configureProfile() {
-        guard let currentUser = Auth.auth().currentUser else {
+        guard let currentUser = activeUser else {
             configureUI(isCurrentUser: false)
             return
         }
 
-        if user == currentUser {
+        if userUid == currentUser.uid {
             configureUI(isCurrentUser: true)
         } else {
             configureUI(isCurrentUser: false)
@@ -124,7 +106,7 @@ class ProfileViewController: UIViewController {
     func populateUserData() {
         let avatarName = userInfo["avatarName"] as? String
         let username = userInfo["username"] as? String
-        let addedFriends = userInfo["addedFriends"] as? [String: String]
+        let addedFriends = userInfo["addedFriends"] as? [String: Any]
         let connectedApps = userInfo["connectedApps"] as? [String: Any]
 
         profileImageView.image = UIImage(named: avatarName ?? "robot_avatar")

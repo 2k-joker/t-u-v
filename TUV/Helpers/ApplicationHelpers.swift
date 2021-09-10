@@ -68,7 +68,13 @@ extension FriendCell {
     }
 }
 
-@objc protocol ButtonDelegate: AnyObject {
-    @objc optional func addFriendButtonTapped(_ button: UIButton)
-    func imageButtonTapped(_ button: UIButton)
+protocol ButtonDelegate: AnyObject {
+    func addFriendButtonTapped(_ button: UIButton)
+    func profileImageTapped(_ button: UIButton, touchPoint: CGPoint?)
+}
+
+extension ButtonDelegate {
+    func addFriendButtonTapped(_ button: UIButton) {
+        () // Do nothing (i.e make optional)
+    }
 }

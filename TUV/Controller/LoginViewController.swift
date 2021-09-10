@@ -11,7 +11,6 @@ import FirebaseAuth
 
 class LoginViewController: UIViewController {
     // MARK: Properties
-    private var dbReference: DatabaseReference!
 
     // MARK: Outlets
     @IBOutlet weak var usernameTextField: UITextField!
@@ -41,17 +40,14 @@ class LoginViewController: UIViewController {
             configureUI(loggingIn: false)
             presentErrorMessage(validationError)
         } else {
-            // TODO: Find user by username or email
-            dbReference = Database.database().reference()
-            let userPath = "users/\(usernameTextField.text!)"
-            
-            dbReference.child(userPath).getData { error, snapshot in
+            Database.database().reference().child("users").queryOrdered(byChild: "username").queryEqual(toValue: usernameTextField.text).getData { error, snapshot in
                 if error != nil {
                     self.presentErrorMessage(Constants.UIAlertMessage.authFailure(.login).description)
                 } else if snapshot.exists() {
-                    let userInfo = snapshot.value as! [String:Any]
+                    let snapshotObject = (snapshot.value as! [String:Any]).first!
+                    let userInfo = snapshotObject.value as! [String:Any]
                     let userEmail = userInfo["email"] as! String
-                    
+
                     self.loginUser(email: userEmail)
                 } else {
                     self.presentErrorMessage(Constants.UIAlertMessage.invalidLogin.description)

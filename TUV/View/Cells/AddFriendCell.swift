@@ -10,21 +10,25 @@ import UIKit
 internal final class AddFriendCell: UITableViewCell, FriendCell {
     // MARK: Properties
     static var reuseIdentifier = "addFriendCell"
-    weak var buttonDelegate: ButtonDelegate?
+    weak var tapDelegate: ButtonDelegate?
     
     // MARK: Outlets
     @IBOutlet weak var friendImageView: UIImageView!
-    @IBOutlet weak var imageButton: UIButton!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var detailsLabel: UILabel!
     @IBOutlet weak var addFriendButton: UIButton!
     
     // MARK: Actions
     @IBAction func addFriendTapped(_ sender: UIButton) {
-        buttonDelegate?.addFriendButtonTapped!(sender)
+        tapDelegate?.addFriendButtonTapped(sender)
     }
 
-    @IBAction func imageButtonTapped(_ sender: UIButton) {
-        buttonDelegate?.imageButtonTapped(sender)
+    @IBAction func profileImageTapped(_ sender: UIButton, forEvent event: UIEvent) {
+        let imageButton = sender
+        let touches = event.touches(for: imageButton)
+        let touch = touches?.first
+        let touchPoint = touch?.location(in: imageButton)
+
+        tapDelegate?.profileImageTapped(sender, touchPoint: touchPoint)
     }
 }
