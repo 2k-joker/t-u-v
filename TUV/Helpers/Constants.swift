@@ -121,7 +121,7 @@ class Constants {
             case .updateSuccessful:
                 return "Update successful ✓"
             case .updateFailed:
-                return "Update failed ✗\nPlease try again.4"
+                return "Update failed ✗\nPlease try again."
             case .removeFriendFailed(let friendUsername):
                 return "Failed to remove \(friendUsername).\nPlease check your connection and try again."
             }

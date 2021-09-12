@@ -14,6 +14,7 @@ class EditProfileViewController: UIViewController {
     var userInfo: [String:Any]!
     fileprivate let currentUser = Auth.auth().currentUser!
     fileprivate let dbReference = Database.database().reference()
+    fileprivate var _refHandle: DatabaseHandle!
     fileprivate let updateAvatarSegue = "updateAvatarSegue"
     fileprivate let verfifyEmailSegue = "verifyEmailSegue"
 
@@ -34,15 +35,20 @@ class EditProfileViewController: UIViewController {
     // MARK: View States
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        retrieveUserInfo()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
-        retrieveUserInfo()
         displayUserInfo()
         errorLabel.isHidden = true
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        configureProfileImageListener()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -88,6 +94,20 @@ class EditProfileViewController: UIViewController {
     }
     
     // MARK: Functions
+    deinit {
+        dbReference.child("users/\(currentUser.uid)").removeObserver(withHandle: _refHandle)
+    }
+    
+    // Add a listener to update avatar when changes occur
+    func configureProfileImageListener() {
+        _refHandle = dbReference.child("users/\(currentUser.uid)").observe(.childChanged, with: { snapshot in
+            if snapshot.key == "avatarName" {
+                let newAvatarName = snapshot.value as! String
+                self.userProfileImage.image = UIImage(named: newAvatarName)
+            }
+        })
+    }
+
     func saveProfileUpdate() {
         var updates: [String:String] = [:]
         let basePath = "users/\(currentUser.uid)"
@@ -98,6 +118,9 @@ class EditProfileViewController: UIViewController {
         
         if !mobileNumberTextField.text!.isEmpty {
             updates["\(basePath)/mobileNumber"] = mobileNumberTextField.text
+        } else if mobileNumberTextField.text!.isEmpty {
+            updates["\(basePath)/mobileNumber"] = "N/A"
+            mobileNumberTextField.text = "N/A"
         }
         
         if !passwordTextField.text!.isEmpty {
@@ -224,6 +247,4 @@ class EditProfileViewController: UIViewController {
         
         return nil
     }
-    
-    // TODO: Add a listener to update avatar when changes occur
 }

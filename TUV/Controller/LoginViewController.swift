@@ -63,7 +63,7 @@ class LoginViewController: UIViewController {
                 self.configureUI(loggingIn: false)
                 self.performSegue(withIdentifier: "loginSegue", sender: nil)
             } else {
-                self.presentErrorMessage(Constants.UIAlertMessage.authFailure(.login).description)
+                self.presentErrorMessage(Constants.UIAlertMessage.invalidLogin.description)
             }
         }
     }

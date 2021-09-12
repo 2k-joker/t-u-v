@@ -26,7 +26,6 @@ class ConfirmSignupViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // TODO: setup view content
         usernameTextField.text = userInfo["username"]
         emailTextField.text = userInfo["email"]
         mobileNumberTextField.text = userInfo["mobileNumber"]
@@ -76,8 +75,9 @@ class ConfirmSignupViewController: UIViewController {
                 
                 DispatchQueue.main.async {
                     self.configureUI(signingUp: false)
-                    self.performSegue(withIdentifier: "confirmSignupSegue", sender: nil)
                 }
+                
+                self.performSegue(withIdentifier: "confirmSignupSegue", sender: nil)
             }
         }
     }

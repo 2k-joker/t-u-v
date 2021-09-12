@@ -24,6 +24,10 @@ class HelperMethods {
         return text.trimmingCharacters(in: characterSet)
     }
     
+    class func splitFriendShipKey(_ key: String) -> [String] {
+        return key.split(separator: "+").map { String($0) }
+    }
+    
     class func resetNavigationBarTintColor(viewController: UIViewController) {
         let feedVC = viewController.storyboard!.instantiateViewController(withIdentifier: "FeedViewController") as! FeedViewController
         viewController.navigationController?.navigationBar.barTintColor = feedVC.navigationController?.navigationBar.barTintColor
@@ -69,12 +73,12 @@ extension FriendCell {
 }
 
 protocol ButtonDelegate: AnyObject {
-    func addFriendButtonTapped(_ button: UIButton)
+    func addFriendButtonTapped(_ button: UIButton, touchPoint: CGPoint?)
     func profileImageTapped(_ button: UIButton, touchPoint: CGPoint?)
 }
 
 extension ButtonDelegate {
-    func addFriendButtonTapped(_ button: UIButton) {
+    func addFriendButtonTapped(_ button: UIButton, touchPoint: CGPoint?) {
         () // Do nothing (i.e make optional)
     }
 }

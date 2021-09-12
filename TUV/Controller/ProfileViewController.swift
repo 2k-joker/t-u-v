@@ -77,7 +77,9 @@ class ProfileViewController: UIViewController {
 
     @IBAction func removeFriendTapped(_ sender: UIButton) {
         if let currentUser = activeUser {
-            dbReference.child("users/\(currentUser.uid)/addedFriends/\(self.usernameLabel.text!)").removeValue()
+            dbReference.child("users/\(currentUser.uid)/addedFriends/\(userUid)").removeValue()
+            dbReference.child("friendships/\(currentUser.uid)+\(userUid)").removeValue()
+            
             self.dismiss(animated: true, completion: nil)
         }
     }

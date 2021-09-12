@@ -12,6 +12,7 @@ import FirebaseDatabase
 class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     // MARK: Properties
     fileprivate let currentUser = Auth.auth().currentUser!
+    fileprivate let dbReference = Database.database().reference()
     fileprivate var currentUserFriends: [String]?
     fileprivate var pageControl: UIPageControl = UIPageControl()
     private(set) lazy var feedChildViewControllers: [UIViewController?] = {
@@ -45,8 +46,7 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
         
         profileBarButton.tintColor = UIColor.white
         friendsBarButton.tintColor = UIColor.white
-        friendsBarButton.isEnabled = false
-        getCurrentUserFriends()
+//        getCurrentUserFriends()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -71,23 +71,22 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
     }
     
     @IBAction func friendsTapped(_ sender: UIBarButtonItem) {
-        self.performSegue(withIdentifier: "friendsSegue", sender: sender)
+        getUserFriendsAndSegue()
     }
     
     // MARK: Functions
-    func getCurrentUserFriends() {
-        Database.database().reference().child("users/\(currentUser.uid)/addedFriends").getData { error, snapshot in
+    func getUserFriendsAndSegue() {
+        Database.database().reference().child("users/\(currentUser.uid)").getData { error, snapshot in
             if error != nil {
                 debugPrint("Error getting user's friends: \(error.debugDescription)")
-                self.friendsBarButton.isEnabled = true
             } else if snapshot.exists() {
-                let snapshotData = snapshot.value as! [String:Bool]
+                let snapshotData = snapshot.value as! [String:Any]
+                let addedFriends = snapshotData["addedFriends"] as? [String:Any]
 
-                self.currentUserFriends = snapshotData.keys.map { $0 }
-                self.friendsBarButton.isEnabled = true
-            } else {
-                self.friendsBarButton.isEnabled = true
+                self.currentUserFriends = addedFriends?.keys.map { $0 }
             }
+            
+            self.performSegue(withIdentifier: "friendsSegue", sender: nil)
         }
     }
 
