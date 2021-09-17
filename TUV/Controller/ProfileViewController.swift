@@ -12,6 +12,7 @@ import FirebaseDatabase
 class ProfileViewController: UIViewController {
     // MARK: Properties
     var userUid: String = ""
+    var isCurrentUserFriend: Bool = false
     fileprivate let activeUser = Auth.auth().currentUser
     fileprivate var userInfo: [String:Any]!
     fileprivate var dbReference: DatabaseReference = Database.database().reference()
@@ -104,8 +105,9 @@ class ProfileViewController: UIViewController {
     func configureUI(isCurrentUser: Bool) {
         editProfileButton.isHidden = !isCurrentUser
         connectAppsButton.isHidden = !isCurrentUser
-        removeFriendButton.isHidden = isCurrentUser
+        removeFriendButton.isHidden = isCurrentUser || !isCurrentUserFriend
         logOutButton.isHidden = !isCurrentUser
+        print(removeFriendButton.isHidden)
     }
     
     func populateUserData() {

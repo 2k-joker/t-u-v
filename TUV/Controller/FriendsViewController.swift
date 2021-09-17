@@ -62,13 +62,13 @@ class FriendsViewController: UIViewController, ButtonDelegate {
         case "friendProfileSegue":
             let profileVC = segue.destination as! ProfileViewController
             profileVC.userUid = selectedFriendUid
+            profileVC.isCurrentUserFriend = true
         case "friendFeedSegue":
             // TODO: set destinatoion user Uid
             let friendFeedVC = segue.destination as! UserFeedViewController
             friendFeedVC.userConnectedApps = selectedFriendConnectedApps
         case "addFriendsSegue":
             let addFriendsVC = segue.destination as! AddFriendsViewController
-            
             addFriendsVC.otherUsersList = otherUsers
         default:
             () // Do nothing
