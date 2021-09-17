@@ -59,7 +59,7 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
         case "friendsSegue":
             let friendsVC = segue.destination as! FriendsViewController
             
-            friendsVC.addedFriends = currentUserFriends ?? []
+            friendsVC.addedFriendsUids = currentUserFriends ?? []
         default:
             () // Do nothing
         }

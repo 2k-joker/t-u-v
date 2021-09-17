@@ -18,6 +18,7 @@ class AddFriendsViewController: UIViewController, ButtonDelegate {
     fileprivate var _addedRefHandle: DatabaseHandle!
     fileprivate var _removedRefHandle: DatabaseHandle!
     fileprivate var selectedUserUid: String! = ""
+    fileprivate var selectedUserConnectedApps: DataSnapshot!
     fileprivate var addedFriendIndexPath: IndexPath!
     fileprivate var addedFriendUid: String!
 
@@ -49,7 +50,8 @@ class AddFriendsViewController: UIViewController, ButtonDelegate {
             let profileVC = segue.destination as! ProfileViewController
             profileVC.userUid = selectedUserUid
         case "addFriendFeedSegue":
-            ()
+            let userFeedVC = segue.destination as! UserFeedViewController
+            userFeedVC.userConnectedApps = selectedUserConnectedApps
         default:
             () // Do nothing
         }
@@ -207,9 +209,22 @@ extension AddFriendsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let cell = tableView.cellForRow(at: indexPath)
+//        let cell = tableView.cellForRow(at: indexPath)
+        
+        dbReference.child("users/\(otherUsersList[indexPath.row])/connectedApps").getData { error, snapshot in
+            if snapshot.exists() {
+                self.selectedUserConnectedApps = snapshot
 
-        tableView.deselectRow(at: indexPath, animated: true)
-        self.performSegue(withIdentifier: "addFriendFeedSegue", sender: cell)
+                tableView.deselectRow(at: indexPath, animated: true)
+                self.performSegue(withIdentifier: "addFriendFeedSegue", sender: nil)
+            } else {
+                tableView.deselectRow(at: indexPath, animated: true)
+                debugPrint(error.debugDescription)
+                // TODO: Present error getting user detals alert
+            }
+        }
+
+//        tableView.deselectRow(at: indexPath, animated: true)
+//        self.performSegue(withIdentifier: "addFriendFeedSegue", sender: cell)
     }
 }

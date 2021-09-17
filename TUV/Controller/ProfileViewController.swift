@@ -40,21 +40,14 @@ class ProfileViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier {
-        case "editProfileSegue":
+        if segue.identifier == "editProfileSegue" {
             let editProfileVC = segue.destination as! EditProfileViewController
             editProfileVC.userInfo = userInfo
-        case "connectAppsSegue":
-            ()
-        default:
-            () // Do nothing
         }
     }
 
     // MARK: Actions
     @IBAction func editProfileTapped(_ sender: UIButton) {
-        // setup user data in destination VC
-        
         // segue to edit profile VC
         self.performSegue(withIdentifier: "editProfileSegue", sender: sender)
     }
@@ -69,8 +62,6 @@ class ProfileViewController: UIViewController {
     }
 
     @IBAction func connectAppsTapped(_ sender: UIButton) {
-        // TODO: Setup destination with users connected apps
-
         // TODO: Navigate to add apps VC
         self.performSegue(withIdentifier: "connectAppsSegue", sender: sender)
     }

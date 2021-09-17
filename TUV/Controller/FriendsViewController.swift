@@ -11,7 +11,7 @@ import FirebaseDatabase
 
 class FriendsViewController: UIViewController, ButtonDelegate {
     // MARK: Properties
-    var addedFriends: [String]! = []
+    var addedFriendsUids: [String]! = []
     fileprivate let currentUser = Auth.auth().currentUser!
     fileprivate var _removedRefHandle: DatabaseHandle!
     fileprivate var _addedRefHandle: DatabaseHandle!
@@ -20,6 +20,7 @@ class FriendsViewController: UIViewController, ButtonDelegate {
     fileprivate var addedCurrentUser: [String]! = []
     fileprivate var otherUsers: [String]! = []
     fileprivate var selectedFriendIndexPath: IndexPath!
+    fileprivate var selectedFriendConnectedApps: DataSnapshot!
     
     // MARK: Outlets
     @IBOutlet var friendsTableView: UITableView!
@@ -37,7 +38,7 @@ class FriendsViewController: UIViewController, ButtonDelegate {
         
         self.navigationController?.navigationBar.barTintColor = self.view.backgroundColor
         
-        addedFriends.removeAll()
+        addedFriendsUids.removeAll()
         friendsTableView.reloadData()
         configureFriendshipAddedObserver()
         configureFriendshipRemovedObserver()
@@ -63,7 +64,8 @@ class FriendsViewController: UIViewController, ButtonDelegate {
             profileVC.userUid = selectedFriendUid
         case "friendFeedSegue":
             // TODO: set destinatoion user Uid
-            ()
+            let friendFeedVC = segue.destination as! UserFeedViewController
+            friendFeedVC.userConnectedApps = selectedFriendConnectedApps
         case "addFriendsSegue":
             let addFriendsVC = segue.destination as! AddFriendsViewController
             
@@ -90,7 +92,7 @@ class FriendsViewController: UIViewController, ButtonDelegate {
             if userUid == self.currentUser.uid {
                 if let indexPath = self.selectedFriendIndexPath {
 
-                    self.addedFriends.remove(at: indexPath.row)
+                    self.addedFriendsUids.remove(at: indexPath.row)
                     self.friendsTableView.deleteRows(at: [indexPath], with: .left)
                 }
             }
@@ -103,7 +105,7 @@ class FriendsViewController: UIViewController, ButtonDelegate {
             let addedUid = HelperMethods.splitFriendShipKey(snapshot.key).last!
             
             if userUid == self.currentUser.uid {
-                self.addedFriends.insert(addedUid, at: 0)
+                self.addedFriendsUids.insert(addedUid, at: 0)
                 self.friendsTableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .left)
             }
         })
@@ -114,7 +116,7 @@ class FriendsViewController: UIViewController, ButtonDelegate {
         let indexPath = friendsTableView.indexPathForRow(at: buttonPosition)
 
         if let tappedIndexPath = indexPath {
-            dbReference.child("users/\(addedFriends[tappedIndexPath.row])").getData { error, snapshot in
+            dbReference.child("users/\(addedFriendsUids[tappedIndexPath.row])").getData { error, snapshot in
                 if snapshot.exists() {
                     self.selectedFriendUid = snapshot.key
                     self.selectedFriendIndexPath = tappedIndexPath
@@ -138,7 +140,7 @@ class FriendsViewController: UIViewController, ButtonDelegate {
                 if let friendships = friendships {
                     let uids = friendships.map { HelperMethods.splitFriendShipKey($0.key).first! }
                     
-                    self.addedCurrentUser = Array(Set(uids).subtracting(Set(self.addedFriends)))
+                    self.addedCurrentUser = Array(Set(uids).subtracting(Set(self.addedFriendsUids)))
                 }
             }
 
@@ -154,7 +156,7 @@ class FriendsViewController: UIViewController, ButtonDelegate {
                 let uids = (snapshot.value as! [String:Any]).map { $0.key }
 
                 // everyone except for current user's friends and current user
-                self.otherUsers = Array(Set(uids).subtracting(Set(self.addedFriends)).subtracting(Set([self.currentUser.uid])))
+                self.otherUsers = Array(Set(uids).subtracting(Set(self.addedFriendsUids)).subtracting(Set([self.currentUser.uid])))
             }
             
             self.performSegue(withIdentifier: "addFriendsSegue", sender: nil)
@@ -169,12 +171,12 @@ class FriendsViewController: UIViewController, ButtonDelegate {
 
 extension FriendsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return addedFriends.count
+        return addedFriendsUids.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = friendsTableView.dequeueReusableCell(withIdentifier: AddedFriendCell.reuseIdentifier) as! AddedFriendCell
-        let friendUid = addedFriends[indexPath.row]
+        let friendUid = addedFriendsUids[indexPath.row]
         
         cell.tapDelegate = self
         cell.friendImageView.image = UIImage(named: "robot_avatar")
@@ -207,9 +209,19 @@ extension FriendsViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // TODO: Get friend at index path
-        let friend = addedFriends[indexPath.row]
+//        let friend = addedFriends[indexPath.row]
         
-        tableView.deselectRow(at: indexPath, animated: true)
-        self.performSegue(withIdentifier: "friendFeedSegue", sender: friend)
+        dbReference.child("users/\(addedFriendsUids[indexPath.row])/connectedApps").getData { error, snapshot in
+            if snapshot.exists() {
+                self.selectedFriendConnectedApps = snapshot
+
+                tableView.deselectRow(at: indexPath, animated: true)
+                self.performSegue(withIdentifier: "friendFeedSegue", sender: nil)
+            } else {
+                tableView.deselectRow(at: indexPath, animated: true)
+                debugPrint(error.debugDescription)
+                // TODO: Present error getting user detals alert
+            }
+        }
     }
 }
