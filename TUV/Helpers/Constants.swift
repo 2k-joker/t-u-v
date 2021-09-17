@@ -109,6 +109,7 @@ class Constants {
         case updateSuccessful
         case updateFailed
         case removeFriendFailed(String)
+        case loadDataFailed
         
         var description: String {
             switch self {
@@ -124,6 +125,8 @@ class Constants {
                 return "Update failed ✗\nPlease try again."
             case .removeFriendFailed(let friendUsername):
                 return "Failed to remove \(friendUsername).\nPlease check your connection and try again."
+            case .loadDataFailed:
+                return "Failed to load information.\nPlease check your connection and try again."
             }
         }
     }

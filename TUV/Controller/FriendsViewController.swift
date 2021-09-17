@@ -92,7 +92,6 @@ class FriendsViewController: UIViewController, ButtonDelegate {
 
                     self.addedFriends.remove(at: indexPath.row)
                     self.friendsTableView.deleteRows(at: [indexPath], with: .left)
-                    debugPrint("removed from list")
                 }
             }
         })
@@ -165,8 +164,6 @@ class FriendsViewController: UIViewController, ButtonDelegate {
     func removeFriendshipObservers() {
         dbReference.child("friendships").removeObserver(withHandle: _addedRefHandle)
         dbReference.child("friendships").removeObserver(withHandle: _removedRefHandle)
-        
-        print("friendship observers removed.")
     }
 }
 
