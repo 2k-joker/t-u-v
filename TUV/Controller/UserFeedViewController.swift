@@ -23,7 +23,6 @@ class UserFeedViewController: UIPageViewController, UIPageViewControllerDataSour
         self.dataSource = self
         self.delegate = self
         
-        debugPrint(userConnectedApps)
         populateFeedChildViewControllers()
         
         if let firstViewController = feedChildViewControllers.first {

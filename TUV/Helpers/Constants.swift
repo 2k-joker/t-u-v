@@ -64,7 +64,7 @@ class Constants {
             case .invalidMobileNumber:
                 return "Mobile number is invalid."
             case .invalidUsername:
-                return "Username should be between 4 to 20 characters."
+                return "Username should be between 4 to 20 characters. Only numbers, letters, underscores and dashes(-) are allowed."
             case .usernameTaken(let username):
                 return "\(username) is already taken."
             case .unverifiedUsername:
@@ -95,7 +95,7 @@ class Constants {
             case .password:
                 return "^(?=.*[a-z])(?=.*[$@$#!%*?&])(?=.*[A-Z]).{8,}$"
             case .username:
-                return "^\\w{4,20}$"
+                return "^[0-9A-Za-z_-]{4,20}$"
 
             }
         }

@@ -73,10 +73,22 @@ class ConfirmSignupViewController: UIViewController {
 
                 dbReference.child("users/\(result!.user.uid)").setValue(userData)
                 
-                DispatchQueue.main.async {
-                    self.configureUI(signingUp: false)
-                }
-                
+                self.configureUI(signingUp: false)
+                self.sendUserEmailVerification(for: result!.user)
+            }
+        }
+    }
+    
+    func sendUserEmailVerification(for user: User) {
+        let actionCodeSettings = ActionCodeSettings.init()
+        actionCodeSettings.handleCodeInApp = true
+        actionCodeSettings.url = URL(string: "https://tuv.page.link/newuser/emailverification")
+        actionCodeSettings.dynamicLinkDomain = "tuv.page.link"
+        
+        user.sendEmailVerification(with: actionCodeSettings) { error in
+            if error != nil {
+                debugPrint(error.debugDescription)
+            } else {
                 self.performSegue(withIdentifier: "confirmSignupSegue", sender: nil)
             }
         }

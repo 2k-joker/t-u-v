@@ -107,7 +107,6 @@ class ProfileViewController: UIViewController {
         connectAppsButton.isHidden = !isCurrentUser
         removeFriendButton.isHidden = isCurrentUser || !isCurrentUserFriend
         logOutButton.isHidden = !isCurrentUser
-        print(removeFriendButton.isHidden)
     }
     
     func populateUserData() {
