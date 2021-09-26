@@ -210,8 +210,6 @@ extension AddFriendsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let cell = tableView.cellForRow(at: indexPath)
-        
         dbReference.child("users/\(otherUsersList[indexPath.row])/connectedApps").getData { error, snapshot in
             if snapshot.exists() {
                 self.selectedUserConnectedApps = snapshot
@@ -224,8 +222,5 @@ extension AddFriendsViewController: UITableViewDelegate, UITableViewDataSource {
                 // TODO: Present error getting user detals alert
             }
         }
-
-//        tableView.deselectRow(at: indexPath, animated: true)
-//        self.performSegue(withIdentifier: "addFriendFeedSegue", sender: cell)
     }
 }

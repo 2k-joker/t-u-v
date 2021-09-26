@@ -11,11 +11,14 @@ import FirebaseAuth
 
 class LoginViewController: UIViewController {
     // MARK: Properties
+    fileprivate let credsVerificationSegue = "verificationSegue"
+    fileprivate var currentUser: User!
 
     // MARK: Outlets
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var resetPasswordButton: UIButton!
     @IBOutlet weak var loginActivity: UIActivityIndicatorView!
     @IBOutlet weak var signupButton: UIButton!
     
@@ -36,6 +39,10 @@ class LoginViewController: UIViewController {
         super.viewWillDisappear(animated)
         unsubscribeFromKeyboardNotifications()
     }
+    
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        // TODO: ???
+//    }
 
     // MARK: Actions
     @IBAction func loginTapped(_ sender: UIButton) {
@@ -47,6 +54,8 @@ class LoginViewController: UIViewController {
         } else {
             Database.database().reference().child("users").queryOrdered(byChild: "username").queryEqual(toValue: usernameTextField.text).getData { error, snapshot in
                 if error != nil {
+                    debugPrint(error.debugDescription)
+                    
                     self.presentErrorMessage(Constants.UIAlertMessage.authFailure(.login).description)
                 } else if snapshot.exists() {
                     let snapshotObject = (snapshot.value as! [String:Any]).first!
@@ -60,15 +69,38 @@ class LoginViewController: UIViewController {
             }
         }
     }
-
+    
+    @IBAction func resetPasswordTapped(_ sender: UIButton) {
+        self.performSegue(withIdentifier: credsVerificationSegue, sender: sender)
+    }
+    
     // MARK: Functions
     func loginUser(email: String) {
         Auth.auth().signIn(withEmail: email, password: passwordTextField.text!) { result, error in
             if error == nil {
                 self.configureUI(loggingIn: false)
-                self.performSegue(withIdentifier: "loginSegue", sender: nil)
+                self.currentUser = result!.user
+                self.checkCurrentUserEmailVerified()
             } else {
                 self.presentErrorMessage(Constants.UIAlertMessage.invalidLogin.description)
+            }
+        }
+    }
+    
+    func checkCurrentUserEmailVerified() {
+        if currentUser.isEmailVerified {
+            self.performSegue(withIdentifier: "loginSegue", sender: nil)
+        } else {
+            presentErrorMessage(Constants.UIAlertMessage.verifyEmail.description)
+        }
+    }
+    
+    func resendEmailVerification() {
+        currentUser.sendEmailVerification { error in
+            if error != nil {
+                self.presentErrorMessage(Constants.UIAlertMessage.authFailure(.sendVerificationLink).description)
+            } else {
+                self.presentErrorMessage(Constants.UIAlertMessage.emailVerificationSent(self.currentUser.email!).description)
             }
         }
     }
@@ -78,12 +110,13 @@ class LoginViewController: UIViewController {
         passwordTextField.isEnabled = !loggingIn
         loginButton.isEnabled = !loggingIn
         signupButton.isEnabled = !loggingIn
+        resetPasswordButton.isEnabled = !loggingIn
 
         loggingIn ? loginActivity.startAnimating() : loginActivity.stopAnimating()
     }
 
     func validateLoginCreds() -> String? {
-        guard let usernameOrEmail = usernameTextField.text else {
+        guard let username = usernameTextField.text else {
             return Constants.FormErrors.emptyEmail.message
         }
         
@@ -91,11 +124,11 @@ class LoginViewController: UIViewController {
             return Constants.FormErrors.emptyPassword.message
         }
 
-        let sanitizedEmail = HelperMethods.sanitizeText(usernameOrEmail)
+        let sanitizedUsername = HelperMethods.sanitizeText(username)
         let sanitizedPassword = HelperMethods.sanitizeText(password)
-        
-        guard !sanitizedEmail.isEmpty else {
-            return Constants.FormErrors.emptyEmail.message
+
+        guard !sanitizedUsername.isEmpty else {
+            return Constants.FormErrors.emptyUsername.message
         }
         
         guard !sanitizedPassword.isEmpty else {
@@ -104,13 +137,20 @@ class LoginViewController: UIViewController {
         
         return nil
     }
-    
+
     func presentErrorMessage(_ message: String) {
-        let alertVC = UIAlertController(title: "Login Error", message: message, preferredStyle: .alert)
+        let verifyEmail = Constants.UIAlertMessage.verifyEmail
+        let alertVC = UIAlertController(title: "Login Error", message: message.description, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
             self.configureUI(loggingIn: false)
         }))
-        
+
+        if message == verifyEmail.description {
+            alertVC.addAction(UIAlertAction(title: "Resend Link", style: .default, handler: { action in
+                self.resendEmailVerification()
+            }))
+        }
+
         self.present(alertVC, animated: true, completion: nil)
     }
 }

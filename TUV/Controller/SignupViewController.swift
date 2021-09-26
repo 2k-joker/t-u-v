@@ -39,7 +39,7 @@ class SignupViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "signupNextSegue" {
-            let emailVerificationVC = segue.destination as! EmailVerificationViewController
+            let confirmSignupVC = segue.destination as! ConfirmSignupViewController
             
             var mobileNumber: String {
                 if numberTextField.text!.isEmpty {
@@ -56,7 +56,7 @@ class SignupViewController: UIViewController {
                 "username": usernameTextField.text!,
                 "password": passwordTextField.text!,
             ]
-            emailVerificationVC.userInfo = userInfo
+            confirmSignupVC.userInfo = userInfo
         }
     }
     

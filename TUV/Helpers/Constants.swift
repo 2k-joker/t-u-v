@@ -8,28 +8,18 @@
 import Foundation
 
 class Constants {
-    enum AppTypes: String {
+    enum AppType: String {
         case instagram = "Instagram"
         case twitter = "Twitter"
         case youtube = "YouTube"
-        
+
         var controllerIdentifier: String {
-            switch self {
-            case .instagram:
-                return "InstagramViewController"
-            case .twitter:
-                return "TwitterViewController"
-            case .youtube:
-                return "YoutubeViewController"
-            }
+            return "\(self.rawValue)ViewController"
         }
         
-    }
-
-    struct AppViewControllerIndentifier {
-        static let twitter = "TwitterViewController"
-        static let instagram = "InstagramViewController"
-        static let youtube = "YoutubeViewController"
+        var imageName: String {
+            return "round_\(self.rawValue.lowercased())_logo"
+        }
     }
     
     enum FormErrors {
@@ -44,8 +34,8 @@ class Constants {
         case usernameTaken(String)
         case unverifiedUsername
         case weakPassword
-        case verifiedEmail
-        case unverifiedEmail
+        case resetLinkSent
+        case resetLinkFailed
         
         var message: String {
             switch self {
@@ -71,10 +61,10 @@ class Constants {
                 return "Username verification failed. Please try again."
             case .weakPassword:
                 return "Password should be at least 8 characters, and contain uppercase, lowercase and special characters."
-            case .verifiedEmail:
-                return "Email verified ✓"
-            case .unverifiedEmail:
-                return "Email verification failed ✗"
+            case .resetLinkSent:
+                return "Reset link sent ✓"
+            case .resetLinkFailed:
+                return "Failed to send reset link ✗"
             }
         }
         
@@ -101,10 +91,11 @@ class Constants {
         }
         
     }
-    
+
     enum UIAlertMessage {
         case authFailure(AuthType)
         case invalidLogin
+        case emailVerificationSent(String)
         case verifyEmail
         case updateSuccessful
         case updateFailed
@@ -114,11 +105,13 @@ class Constants {
         var description: String {
             switch self {
             case .authFailure(let authType):
-                return "Failed to \(authType.action)\nPlease check your connection and try again."
+                return "Failed to \(authType.action)\nPlease check your input and connection."
             case .invalidLogin:
                 return "Invalid username or password"
+            case .emailVerificationSent(let email):
+                return "Email verification link sent to: \(email)"
             case .verifyEmail:
-                return "You have to verify your new email before it gets updated."
+                return "Email verification required before signing in."
             case .updateSuccessful:
                 return "Update successful ✓"
             case .updateFailed:
@@ -130,13 +123,14 @@ class Constants {
             }
         }
     }
-    
+
     enum AuthType {
         case login
         case logout
         case signup
         case updatePassword
         case updateEmail
+        case sendVerificationLink
         
         var action: String {
             switch self {
@@ -150,6 +144,8 @@ class Constants {
                 return "update password."
             case .updateEmail:
                 return "update email."
+            case .sendVerificationLink:
+                return "send email verification link."
             }
         }
     }

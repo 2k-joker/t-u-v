@@ -106,7 +106,7 @@ class FriendsViewController: UIViewController, ButtonDelegate {
             
             if userUid == self.currentUser.uid {
                 self.addedFriendsUids.insert(addedUid, at: 0)
-                self.friendsTableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .left)
+                self.friendsTableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
             }
         })
     }

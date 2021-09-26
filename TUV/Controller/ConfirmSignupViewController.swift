@@ -14,13 +14,13 @@ class ConfirmSignupViewController: UIViewController {
     var userInfo: [String: String]!
     
     // MARK: Outlets
-    @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var usernameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var mobileNumberTextField: UITextField!
     @IBOutlet weak var signupButton: UIButton!
     @IBOutlet weak var termsAndPoliciesButton: UIButton!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var backButton: UIButton!
     
     // MARK: View States
     override func viewDidLoad() {
@@ -38,11 +38,11 @@ class ConfirmSignupViewController: UIViewController {
         emailTextField.isEnabled = false
         mobileNumberTextField.isEnabled = false
         
-        cancelButton.setTitleColor(.lightGray, for: .disabled)
+        backButton.setTitleColor(.lightGray, for: .disabled)
         termsAndPoliciesButton.setTitleColor(.lightGray, for: .disabled)
         configureUI(signingUp: false)
     }
-    
+
     // MARK: Actions
     @IBAction func signupTapped(_ sender: UIButton) {
         configureUI(signingUp: true)
@@ -51,8 +51,8 @@ class ConfirmSignupViewController: UIViewController {
     
     // MARK: Functions
     func configureUI(signingUp: Bool) {
-        cancelButton.isEnabled = !signingUp
         signupButton.isEnabled = !signingUp
+        backButton.isEnabled = !signingUp
         termsAndPoliciesButton.isEnabled = !signingUp
         
         signingUp ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
@@ -80,12 +80,7 @@ class ConfirmSignupViewController: UIViewController {
     }
     
     func sendUserEmailVerification(for user: User) {
-        let actionCodeSettings = ActionCodeSettings.init()
-        actionCodeSettings.handleCodeInApp = true
-        actionCodeSettings.url = URL(string: "https://tuv.page.link/newuser/emailverification")
-        actionCodeSettings.dynamicLinkDomain = "tuv.page.link"
-        
-        user.sendEmailVerification(with: actionCodeSettings) { error in
+        user.sendEmailVerification { error in
             if error != nil {
                 debugPrint(error.debugDescription)
             } else {

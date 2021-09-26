@@ -14,9 +14,8 @@ class EditProfileViewController: UIViewController {
     var userInfo: [String:Any]!
     fileprivate let currentUser = Auth.auth().currentUser!
     fileprivate let dbReference = Database.database().reference()
-    fileprivate var _refHandle: DatabaseHandle!
+    fileprivate var _avatarChangedRefHandle: DatabaseHandle!
     fileprivate let updateAvatarSegue = "updateAvatarSegue"
-    fileprivate let verfifyEmailSegue = "verifyEmailSegue"
 
     // MARK: Outlets
     @IBOutlet weak var cancelButton: UIButton!
@@ -33,12 +32,6 @@ class EditProfileViewController: UIViewController {
     @IBOutlet weak var saveButton: UIButton!
 
     // MARK: View States
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        retrieveUserInfo()
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
@@ -55,18 +48,13 @@ class EditProfileViewController: UIViewController {
         super.viewWillDisappear(animated)
         
         unsubscribeFromKeyboardNotifications()
-        dbReference.child("users/\(currentUser.uid)").removeObserver(withHandle: _refHandle)
+        dbReference.child("users/\(currentUser.uid)").removeObserver(withHandle: _avatarChangedRefHandle)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier {
-        case updateAvatarSegue:
-            () // TODO: set preview image to user's avatar
-        case verfifyEmailSegue:
-            let verifyEmailVC = segue.destination as! UserEmailVerificationViewController
-            verifyEmailVC.userEmail = emailTextField.text!
-        default:
-            () // Do nothing
+        if segue.identifier == updateAvatarSegue {
+            let pickAvatarVC = segue.destination as! PickAvatarViewController
+            pickAvatarVC.currentAvatarName = userInfo["avatarName"] as! String
         }
     }
     
@@ -76,7 +64,6 @@ class EditProfileViewController: UIViewController {
     }
 
     @IBAction func updateAvatarTapped(_ sender: UIButton) {
-        // segue to pick avatar VC
         self.performSegue(withIdentifier: updateAvatarSegue, sender: sender)
     }
 
@@ -88,14 +75,14 @@ class EditProfileViewController: UIViewController {
             updateErrorLabel(validationError)
             configureUI(saving: false)
         } else {
+            // Save changes
+            saveProfileUpdate()
+            configureUI(saving: false)
+
             if (!emailTextField.text!.isEmpty) && (emailTextField.text! != currentUser.email) {
-                configureUI(saving: false)
-                presentMessage(message: .verifyEmail)
+                updateUserEmail(emailTextField.text!)
             } else {
-                // Save changes
-                saveProfileUpdate()
-                configureUI(saving: false)
-                presentMessage(message: .updateSuccessful)
+                presentMessage(message: Constants.UIAlertMessage.updateSuccessful.description)
             }
         }
     }
@@ -104,7 +91,7 @@ class EditProfileViewController: UIViewController {
     
     // Add a listener to update avatar when changes occur
     func configureProfileImageListener() {
-        _refHandle = dbReference.child("users/\(currentUser.uid)").observe(.childChanged, with: { snapshot in
+        _avatarChangedRefHandle = dbReference.child("users/\(currentUser.uid)").observe(.childChanged, with: { snapshot in
             if snapshot.key == "avatarName" {
                 let newAvatarName = snapshot.value as! String
                 self.userProfileImage.image = UIImage(named: newAvatarName)
@@ -134,17 +121,7 @@ class EditProfileViewController: UIViewController {
         dbReference.updateChildValues(updates) { error, reference in
             if error != nil {
                 debugPrint(error.debugDescription)
-                self.presentMessage(message: .updateFailed)
-            }
-        }
-    }
-
-    func retrieveUserInfo() {
-        dbReference.child("users/\(currentUser.uid)").getData { error, snapshot in
-            if snapshot.exists() {
-                self.userInfo = snapshot.value as? [String:Any]
-            } else {
-                debugPrint(error.debugDescription)
+                self.presentMessage(message: Constants.UIAlertMessage.updateFailed.description)
             }
         }
     }
@@ -178,33 +155,57 @@ class EditProfileViewController: UIViewController {
     func updateUserPassword(_ password: String) {
         currentUser.updatePassword(to: password) { error in
             if error != nil {
-                self.presentMessage(message: .authFailure(.updatePassword))
+                self.presentMessage(message: Constants.UIAlertMessage.authFailure(.updatePassword).description)
             }
         }
     }
     
-    func presentMessage(message: Constants.UIAlertMessage) {
-        let  verifyEmailMessage = Constants.UIAlertMessage.verifyEmail
-        let alertVC = UIAlertController(title: nil, message: message.description, preferredStyle: .alert)
-   
-        if message.description == verifyEmailMessage.description {
-            alertVC.addAction(UIAlertAction(title: "Continue", style: .default, handler: handleVerifyUserEmail(action:)))
-            alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        } else {
-            alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
-                self.resetUserInfoForm()
-            }))
+    func updateUserEmail(_ email: String) {
+        currentUser.updateEmail(to: email) { error in
+            if error != nil {
+                self.presentFailedToUpdateEmailMessage()
+            } else {
+                let updates = ["users/\(self.currentUser.uid)/email": email]
+                
+                self.dbReference.updateChildValues(updates) { error, reference in
+                    if error != nil {
+                        self.presentFailedToUpdateEmailMessage()
+                    } else {
+                        self.sendEmailVerificationLink()
+                    }
+                }
+                
+            }
         }
+    }
+    
+    func sendEmailVerificationLink() {
+        currentUser.sendEmailVerification { error in
+            if error != nil {
+                self.presentFailedToUpdateEmailMessage()
+            } else {
+                let alertMessage = [
+                    Constants.UIAlertMessage.updateSuccessful.description,
+                    Constants.UIAlertMessage.emailVerificationSent(self.currentUser.email!).description
+                ].joined(separator: "\n")
+                
+                self.presentMessage(message: alertMessage)
+            }
+        }
+    }
+    
+    func presentFailedToUpdateEmailMessage() {
+        presentMessage(message: Constants.UIAlertMessage.authFailure(.updateEmail).description)
+    }
+    
+    func presentMessage(message: String) {
+        let alertVC = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+
+        alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+            self.resetUserInfoForm()
+        }))
         
         self.present(alertVC, animated: true, completion: nil)
-    }
-
-    func handleVerifyUserEmail(action: UIAlertAction) {
-        // save changes (without email)
-        saveProfileUpdate()
-        
-        self.performSegue(withIdentifier: verfifyEmailSegue, sender: action)
-        resetUserInfoForm()
     }
     
     func isValidInput(input: String?, type: Constants.RegexPatterns) -> Bool {

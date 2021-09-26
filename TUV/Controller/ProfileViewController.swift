@@ -39,7 +39,7 @@ class ProfileViewController: UIViewController {
 
         configureProfile()
     }
-    
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "editProfileSegue" {
             let editProfileVC = segue.destination as! EditProfileViewController
@@ -49,7 +49,6 @@ class ProfileViewController: UIViewController {
 
     // MARK: Actions
     @IBAction func editProfileTapped(_ sender: UIButton) {
-        // segue to edit profile VC
         self.performSegue(withIdentifier: "editProfileSegue", sender: sender)
     }
 

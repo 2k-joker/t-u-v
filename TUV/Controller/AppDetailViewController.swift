@@ -12,9 +12,9 @@ import FirebaseDatabase
 class AppDetailViewController: UIViewController {
     // MARK: Properties
     var selectedAppSnapshot: DataSnapshot!
+    let currentUser = Auth.auth().currentUser!
+    let dbReference = Database.database().reference()
     fileprivate var selectedAppData: [String:Any]!
-    fileprivate let currentUser = Auth.auth().currentUser!
-    fileprivate let dbReference = Database.database().reference()
     fileprivate var _refFavoriteChangedHandle: DatabaseHandle!
     fileprivate var _refSelectedChangedHandle: DatabaseHandle!
     fileprivate var selectedAppsPath: String!
@@ -64,18 +64,16 @@ class AppDetailViewController: UIViewController {
         if isCurrentUserConnected {
             // TODO: open the selected app
         } else {
+            let appType = Constants.AppType.init(rawValue: selectedAppSnapshot.key)!
             
             let connectedAppInfo: [String: String] = [
-                "imageName": selectedAppData["imageName"] as! String,
+                "imageName": appType.imageName,
                 "username": "N/A",
-                "sessionToken": "N/A",
-                "linkToLastShared": "N/A"
+                "accountId": "N/A",
             ]
             
-            // TODO: redirect to app link page
-            // TODO: update connectedAppInfo
-
             updateCurrentUserConnectedApps(with: connectedAppInfo)
+            connectToApp(of: appType)
         }
     }
 

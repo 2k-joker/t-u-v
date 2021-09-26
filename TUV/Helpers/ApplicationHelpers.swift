@@ -7,19 +7,18 @@
 
 import UIKit
 
-class App {
-    var image: UIImage?
-    var name: String
-    var favorite: Bool = false
-    
-    
-    init(type: Constants.AppTypes) {
-        self.image = UIImage(named: "round_\(type.rawValue.lowercased())_logo")
-        self.name = type.rawValue
-    }
-}
-
 class HelperMethods {
+    static let usernameKey = "userName"
+    
+    class func setUsername(to username: String) {
+        UserDefaults.standard.setValue(username, forKey: HelperMethods.usernameKey)
+        UserDefaults.standard.synchronize()
+    }
+    
+    class func getUsername() -> String {
+        return UserDefaults.standard.string(forKey: HelperMethods.usernameKey) ?? ""
+    }
+
     class func sanitizeText(_ text: String, characterSet: CharacterSet = .whitespacesAndNewlines) -> String {
         return text.trimmingCharacters(in: characterSet)
     }
@@ -79,6 +78,12 @@ protocol ButtonDelegate: AnyObject {
 
 extension ButtonDelegate {
     func addFriendButtonTapped(_ button: UIButton, touchPoint: CGPoint?) {
-        () // Do nothing (i.e make optional)
+        () // Do nothing if not overwritten (i.e make optional)
+    }
+}
+
+extension String {
+    func trim(by character: String) -> String {
+        return self.trimmingCharacters(in: .init(charactersIn: "@"))
     }
 }

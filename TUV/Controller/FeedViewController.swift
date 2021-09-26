@@ -46,7 +46,6 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
         
         profileBarButton.tintColor = UIColor.white
         friendsBarButton.tintColor = UIColor.white
-//        getCurrentUserFriends()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
