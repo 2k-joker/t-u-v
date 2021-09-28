@@ -61,18 +61,11 @@ class AppDetailViewController: UIViewController {
 
     // MARK: Actions
     @IBAction func connectVisitTapped(_ sender: UIButton) {
+        let appType = Constants.AppType.init(rawValue: selectedAppSnapshot.key)
+
         if isCurrentUserConnected {
-            // TODO: open the selected app
+            visitApp(of: appType)
         } else {
-            let appType = Constants.AppType.init(rawValue: selectedAppSnapshot.key)!
-            
-            let connectedAppInfo: [String: String] = [
-                "imageName": appType.imageName,
-                "username": "N/A",
-                "accountId": "N/A",
-            ]
-            
-            updateCurrentUserConnectedApps(with: connectedAppInfo)
             connectToApp(of: appType)
         }
     }

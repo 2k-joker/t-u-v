@@ -64,7 +64,6 @@ class FriendsViewController: UIViewController, ButtonDelegate {
             profileVC.userUid = selectedFriendUid
             profileVC.isCurrentUserFriend = true
         case "friendFeedSegue":
-            // TODO: set destinatoion user Uid
             let friendFeedVC = segue.destination as! UserFeedViewController
             friendFeedVC.userConnectedApps = selectedFriendConnectedApps
         case "addFriendsSegue":

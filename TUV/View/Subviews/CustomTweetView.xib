@@ -23,7 +23,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1KZ-mX-nAG" userLabel="Tweet Label">
-                    <rect key="frame" x="20" y="215.5" width="334" height="21.5"/>
+                    <rect key="frame" x="20" y="161.5" width="334" height="21.5"/>
                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
@@ -58,8 +58,9 @@
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="V59-QY-atl" secondAttribute="bottom" constant="15" id="L2D-bm-E5e"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="1KZ-mX-nAG" secondAttribute="trailing" constant="20" id="RQD-UJ-E7s"/>
                 <constraint firstItem="1KZ-mX-nAG" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="20" id="dQU-3h-Fqa"/>
+                <constraint firstItem="1KZ-mX-nAG" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="jk5-w7-ZAa"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="V59-QY-atl" secondAttribute="trailing" constant="10" id="n86-iA-kKV"/>
-                <constraint firstItem="V59-QY-atl" firstAttribute="top" secondItem="1KZ-mX-nAG" secondAttribute="bottom" constant="30" id="sot-Qk-AQ1"/>
+                <constraint firstItem="V59-QY-atl" firstAttribute="top" relation="greaterThanOrEqual" secondItem="1KZ-mX-nAG" secondAttribute="bottom" constant="30" id="sot-Qk-AQ1"/>
                 <constraint firstItem="V59-QY-atl" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="xn0-KK-jba"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>

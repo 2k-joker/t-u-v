@@ -10,7 +10,7 @@ import UIKit
 class HelperMethods {
     static let usernameKey = "userName"
     
-    class func setUsername(to username: String) {
+    class func setUsername(to username: String?) {
         UserDefaults.standard.setValue(username, forKey: HelperMethods.usernameKey)
         UserDefaults.standard.synchronize()
     }
@@ -27,26 +27,27 @@ class HelperMethods {
         return key.split(separator: "+").map { String($0) }
     }
     
-    class func resetNavigationBarTintColor(viewController: UIViewController) {
-        let feedVC = viewController.storyboard!.instantiateViewController(withIdentifier: "FeedViewController") as! FeedViewController
-        viewController.navigationController?.navigationBar.barTintColor = feedVC.navigationController?.navigationBar.barTintColor
-    }
-    
-    class func configurePageControl(numberOfPages: Int) -> UIPageControl {
-        let pageControl = UIPageControl(frame: CGRect(x: 0, y: UIScreen.main.bounds.maxY - 60, width: UIScreen.main.bounds.width, height: 50))
-        pageControl.numberOfPages = numberOfPages
-        pageControl.currentPage = 0
-        pageControl.tintColor = UIColor.white
-        pageControl.pageIndicatorTintColor = .lightGray
-        pageControl.currentPageIndicatorTintColor = .white
-        
-        return pageControl
-    }
-    
     class func validateInput(input: String?, type: Constants.RegexPatterns) -> Bool {
         let predicate = NSPredicate(format: "SELF MATCHES %@", type.pattern)
         
         return predicate.evaluate(with: input)
+    }
+    
+    class func setAppsAuthSettings() {
+        let mainStoryBoard = UIStoryboard(name: "Main", bundle: nil)
+        let twitterVC = mainStoryBoard.instantiateViewController(withIdentifier: Constants.AppType.twitter.controllerIdentifier) as! TwitterViewController
+        let youtubeVC = mainStoryBoard.instantiateViewController(withIdentifier: Constants.AppType.youtube.controllerIdentifier) as! YoutubeViewController
+        
+        twitterVC.setApiAuthorization()
+        youtubeVC.setApiAuthorization()
+    }
+    
+    class func visitPage(for appType: Constants.AppType, with appData: [String:Any] = [:], context: Constants.AppUrlContext = .specificContent) {
+        var url: URL {
+            ApplicationBuilders.buildAppUrl(for: appType, with: appData, context: context)
+        }
+        
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 }
 

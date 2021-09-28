@@ -11,7 +11,6 @@ import FirebaseDatabase
 
 class UserFeedViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate  {
     // MARK: Properties
-    var userUid: String!
     var userConnectedApps: DataSnapshot!
     fileprivate var pageControl: UIPageControl = UIPageControl()
     fileprivate var feedChildViewControllers: [UIViewController?]!
@@ -34,8 +33,6 @@ class UserFeedViewController: UIPageViewController, UIPageViewControllerDataSour
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-//        debugPrint(userConnectedApps)
     }
 
     // MARK: Functions
@@ -56,7 +53,7 @@ class UserFeedViewController: UIPageViewController, UIPageViewControllerDataSour
     }
     
     private func configurePageControl() {
-        pageControl = HelperMethods.configurePageControl(numberOfPages: feedChildViewControllers.count)
+        pageControl = ApplicationBuilders.buildPageControl(withNumberOfPages: feedChildViewControllers.count)
         self.view.addSubview(pageControl)
     }
     

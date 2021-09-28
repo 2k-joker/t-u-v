@@ -148,7 +148,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t0r-XT-SVg">
-                                <rect key="frame" x="304" y="94" width="88" height="30"/>
+                                <rect key="frame" x="304" y="74" width="88" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="Kex-GU-Qsf"/>
                                 </constraints>
@@ -160,14 +160,14 @@
                                 </connections>
                             </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="tuv_icon_curved" translatesAutoresizingMaskIntoConstraints="NO" id="YZG-93-2CZ">
-                                <rect key="frame" x="157" y="154" width="100" height="100"/>
+                                <rect key="frame" x="157" y="134" width="100" height="100"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="100" id="03z-pX-7dM"/>
                                     <constraint firstAttribute="height" constant="100" id="InS-I3-tey"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="An easier way to keep up with friends." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O38-Dk-cyV">
-                                <rect key="frame" x="34" y="264" width="346" height="30"/>
+                                <rect key="frame" x="34" y="244" width="346" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="xJ4-WU-CRe"/>
                                 </constraints>
@@ -176,7 +176,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="E2I-sn-fM0">
-                                <rect key="frame" x="20" y="330" width="374" height="320"/>
+                                <rect key="frame" x="20" y="310" width="374" height="320"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="o6c-oX-vm9">
                                         <rect key="frame" x="0.0" y="0.0" width="374" height="60"/>
@@ -275,7 +275,7 @@
                                 </constraints>
                             </stackView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3hO-is-LzL" userLabel="Error label">
-                                <rect key="frame" x="22" y="666" width="370" height="20.5"/>
+                                <rect key="frame" x="22" y="646" width="370" height="20.5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="370" id="ias-gt-SxW"/>
                                 </constraints>
@@ -315,7 +315,7 @@
                             <constraint firstItem="ds1-Kw-QEW" firstAttribute="centerX" secondItem="Ny4-e2-2BI" secondAttribute="centerX" id="UMN-rf-pJQ"/>
                             <constraint firstItem="bn9-rP-rlG" firstAttribute="centerX" secondItem="Ny4-e2-2BI" secondAttribute="centerX" id="ZL3-wC-br7"/>
                             <constraint firstItem="3hO-is-LzL" firstAttribute="centerX" secondItem="Ny4-e2-2BI" secondAttribute="centerX" id="guv-sC-ZXs"/>
-                            <constraint firstItem="t0r-XT-SVg" firstAttribute="top" secondItem="Ny4-e2-2BI" secondAttribute="top" constant="50" id="lrH-cf-NDk"/>
+                            <constraint firstItem="t0r-XT-SVg" firstAttribute="top" secondItem="Ny4-e2-2BI" secondAttribute="top" constant="30" id="lrH-cf-NDk"/>
                             <constraint firstItem="Ny4-e2-2BI" firstAttribute="trailing" secondItem="E2I-sn-fM0" secondAttribute="trailing" constant="20" id="nRA-be-Hz6"/>
                             <constraint firstItem="E2I-sn-fM0" firstAttribute="top" secondItem="O38-Dk-cyV" secondAttribute="bottom" constant="36" id="oTb-gX-Lh4"/>
                             <constraint firstItem="Ny4-e2-2BI" firstAttribute="bottom" secondItem="ds1-Kw-QEW" secondAttribute="bottom" constant="50" id="uub-PK-oLS"/>
@@ -906,12 +906,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4sL-jk-UpT">
-                                <rect key="frame" x="157" y="114" width="100" height="100"/>
-                                <connections>
-                                    <action selector="visitPageTapped:" destination="bYG-mK-khj" eventType="touchUpInside" id="TkS-ff-nKi"/>
-                                </connections>
-                            </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="round_twitter_logo" translatesAutoresizingMaskIntoConstraints="NO" id="DV3-QS-6Z9">
                                 <rect key="frame" x="157" y="114" width="100" height="100"/>
                                 <constraints>
@@ -919,8 +913,8 @@
                                     <constraint firstAttribute="height" constant="100" id="eZ4-LY-Br7"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Twitter handle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f68-Xh-1IZ">
-                                <rect key="frame" x="150" y="224" width="114.5" height="20.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="username" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f68-Xh-1IZ">
+                                <rect key="frame" x="167.5" y="224" width="79.5" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -928,9 +922,13 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f6X-Hs-k02" customClass="CustomTweetView" customModule="TUV" customModuleProvider="target">
                                 <rect key="frame" x="20" y="274.5" width="374" height="300"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="300" id="wui-GS-jHs"/>
                                 </constraints>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="HOh-ZZ-D9l" appends="YES" id="s8l-52-Qcm"/>
+                                </connections>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="cLY-94-P1X"/>
@@ -942,10 +940,6 @@
                             <constraint firstItem="DV3-QS-6Z9" firstAttribute="top" secondItem="cLY-94-P1X" secondAttribute="top" constant="70" id="GKp-DG-Mrm"/>
                             <constraint firstItem="f6X-Hs-k02" firstAttribute="leading" secondItem="cLY-94-P1X" secondAttribute="leading" constant="20" id="GWP-A5-xTD"/>
                             <constraint firstItem="f6X-Hs-k02" firstAttribute="top" secondItem="f68-Xh-1IZ" secondAttribute="bottom" constant="30" id="LS1-EB-hTH"/>
-                            <constraint firstItem="4sL-jk-UpT" firstAttribute="top" secondItem="DV3-QS-6Z9" secondAttribute="top" id="Sso-LQ-ksY"/>
-                            <constraint firstItem="4sL-jk-UpT" firstAttribute="trailing" secondItem="DV3-QS-6Z9" secondAttribute="trailing" id="Z56-ht-MtQ"/>
-                            <constraint firstItem="4sL-jk-UpT" firstAttribute="bottom" secondItem="DV3-QS-6Z9" secondAttribute="bottom" id="hIW-yG-dDn"/>
-                            <constraint firstItem="4sL-jk-UpT" firstAttribute="leading" secondItem="DV3-QS-6Z9" secondAttribute="leading" id="nQO-Vc-Ryf"/>
                             <constraint firstItem="f68-Xh-1IZ" firstAttribute="centerX" secondItem="cLY-94-P1X" secondAttribute="centerX" id="tuR-T9-v7z"/>
                         </constraints>
                     </view>
@@ -953,11 +947,16 @@
                     <connections>
                         <outlet property="customTweetView" destination="f6X-Hs-k02" id="DZj-m2-1EY"/>
                         <outlet property="profileImageView" destination="DV3-QS-6Z9" id="H1m-nA-jSi"/>
-                        <outlet property="twitterHandleLabel" destination="f68-Xh-1IZ" id="7qg-OJ-mgA"/>
-                        <outlet property="visitProfileButton" destination="4sL-jk-UpT" id="VXF-Pt-42B"/>
+                        <outlet property="tweetViewTapRecognizer" destination="HOh-ZZ-D9l" id="cKf-56-lGf"/>
+                        <outlet property="usernameLabel" destination="f68-Xh-1IZ" id="7Wb-Na-Ohw"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qUd-KZ-Tet" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="HOh-ZZ-D9l">
+                    <connections>
+                        <action selector="tweetViewTapped:" destination="bYG-mK-khj" id="akz-qK-JbP"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="4024.6376811594205" y="256.47321428571428"/>
         </scene>
@@ -1028,18 +1027,11 @@
         <!--YouTube-->
         <scene sceneID="AiL-U4-h9K">
             <objects>
-                <viewController storyboardIdentifier="YoutubeViewController" id="zjc-Un-TCu" customClass="YoutubeViewController" customModule="TUV" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="YouTubeViewController" id="zjc-Un-TCu" customClass="YoutubeViewController" customModule="TUV" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="6eB-C6-ooW">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mE7-fD-qao">
-                                <rect key="frame" x="157" y="114" width="100" height="100"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="visitPageTapped:" destination="zjc-Un-TCu" eventType="touchUpInside" id="pqF-Fx-mqy"/>
-                                </connections>
-                            </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="round_youtube_logo" translatesAutoresizingMaskIntoConstraints="NO" id="FBT-8z-RjV">
                                 <rect key="frame" x="157" y="114" width="100" height="100"/>
                                 <constraints>
@@ -1047,42 +1039,58 @@
                                     <constraint firstAttribute="width" constant="100" id="8Pg-IE-3Qz"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Youtube handle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="onQ-gL-fH6">
-                                <rect key="frame" x="145" y="224" width="124" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="username" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="onQ-gL-fH6">
+                                <rect key="frame" x="167.5" y="224" width="79.5" height="21"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="placeholder_video" translatesAutoresizingMaskIntoConstraints="NO" id="JxB-Rf-0ku">
-                                <rect key="frame" x="20" y="275" width="374" height="250"/>
+                                <rect key="frame" x="20" y="275" width="374" height="350"/>
+                                <gestureRecognizers/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="250" id="Bhr-sr-Pwy"/>
+                                    <constraint firstAttribute="height" constant="350" id="Bhr-sr-Pwy"/>
                                 </constraints>
                             </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="boJ-Cf-ajY">
+                                <rect key="frame" x="20" y="275" width="374" height="350"/>
+                                <connections>
+                                    <action selector="thumbnailTapped:" destination="zjc-Un-TCu" eventType="touchUpInside" id="iV5-l3-4LT"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ATI-DZ-tdq" userLabel="Error Label">
+                                <rect key="frame" x="158.5" y="438" width="97" height="24"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="2XK-pB-gu9"/>
                         <color key="backgroundColor" red="1" green="0.47636333739062797" blue="0.47435476604187643" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
                             <constraint firstItem="2XK-pB-gu9" firstAttribute="trailing" secondItem="JxB-Rf-0ku" secondAttribute="trailing" constant="20" id="Bp7-8j-xgB"/>
                             <constraint firstItem="FBT-8z-RjV" firstAttribute="centerX" secondItem="2XK-pB-gu9" secondAttribute="centerX" id="DW3-Me-6cS"/>
-                            <constraint firstItem="mE7-fD-qao" firstAttribute="top" secondItem="FBT-8z-RjV" secondAttribute="top" id="HPi-sp-k1d"/>
-                            <constraint firstItem="mE7-fD-qao" firstAttribute="trailing" secondItem="FBT-8z-RjV" secondAttribute="trailing" id="HtB-X8-BXu"/>
                             <constraint firstItem="onQ-gL-fH6" firstAttribute="top" secondItem="FBT-8z-RjV" secondAttribute="bottom" constant="10" id="O3i-SH-XsY"/>
                             <constraint firstItem="FBT-8z-RjV" firstAttribute="top" secondItem="2XK-pB-gu9" secondAttribute="top" constant="70" id="UIU-iv-SA0"/>
-                            <constraint firstItem="mE7-fD-qao" firstAttribute="bottom" secondItem="FBT-8z-RjV" secondAttribute="bottom" id="VIV-db-wsN"/>
-                            <constraint firstItem="mE7-fD-qao" firstAttribute="leading" secondItem="FBT-8z-RjV" secondAttribute="leading" id="WZR-7g-5fD"/>
+                            <constraint firstItem="boJ-Cf-ajY" firstAttribute="trailing" secondItem="JxB-Rf-0ku" secondAttribute="trailing" id="UTX-a7-EAN"/>
                             <constraint firstItem="JxB-Rf-0ku" firstAttribute="leading" secondItem="2XK-pB-gu9" secondAttribute="leading" constant="20" id="YAF-lN-e1b"/>
+                            <constraint firstItem="ATI-DZ-tdq" firstAttribute="centerX" secondItem="JxB-Rf-0ku" secondAttribute="centerX" id="eqH-Sv-H7z"/>
+                            <constraint firstItem="boJ-Cf-ajY" firstAttribute="top" secondItem="JxB-Rf-0ku" secondAttribute="top" id="hm4-A9-Ui0"/>
                             <constraint firstItem="JxB-Rf-0ku" firstAttribute="top" secondItem="onQ-gL-fH6" secondAttribute="bottom" constant="30" id="hqB-L3-gj5"/>
+                            <constraint firstItem="boJ-Cf-ajY" firstAttribute="leading" secondItem="JxB-Rf-0ku" secondAttribute="leading" id="nOK-tI-fUi"/>
+                            <constraint firstItem="ATI-DZ-tdq" firstAttribute="centerY" secondItem="JxB-Rf-0ku" secondAttribute="centerY" id="pna-yo-I69"/>
+                            <constraint firstItem="boJ-Cf-ajY" firstAttribute="bottom" secondItem="JxB-Rf-0ku" secondAttribute="bottom" id="wF3-z2-Dlk"/>
                             <constraint firstItem="onQ-gL-fH6" firstAttribute="centerX" secondItem="2XK-pB-gu9" secondAttribute="centerX" id="zeT-Ai-gUh"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="YouTube" image="tab_bar_youtube" id="qAN-oJ-z6l"/>
                     <navigationItem key="navigationItem" id="OwP-Dw-XLj"/>
                     <connections>
+                        <outlet property="errorLabel" destination="ATI-DZ-tdq" id="FhY-hM-mDe"/>
                         <outlet property="mediaImageView" destination="JxB-Rf-0ku" id="XMy-HU-yUl"/>
                         <outlet property="profileImageView" destination="FBT-8z-RjV" id="9rr-gu-1ve"/>
-                        <outlet property="visitPageButton" destination="mE7-fD-qao" id="hPb-4Q-Boc"/>
-                        <outlet property="youtubeHandleLabel" destination="onQ-gL-fH6" id="1LB-3Q-UxK"/>
+                        <outlet property="thumbnailButton" destination="boJ-Cf-ajY" id="qJ9-53-F6g"/>
+                        <outlet property="usernameLabel" destination="onQ-gL-fH6" id="chI-Hm-qdp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jLd-9l-HlN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -19,7 +19,11 @@ class Constants {
         
         var imageName: String {
             return "round_\(self.rawValue.lowercased())_logo"
-        }
+        }        
+    }
+    
+    enum AppUrlContext {
+        case specificContent, profile
     }
     
     enum FormErrors {
@@ -131,6 +135,7 @@ class Constants {
         case updatePassword
         case updateEmail
         case sendVerificationLink
+        case connectApp
         
         var action: String {
             switch self {
@@ -146,6 +151,8 @@ class Constants {
                 return "update email."
             case .sendVerificationLink:
                 return "send email verification link."
+            case .connectApp:
+                return "connect to app."
             }
         }
     }

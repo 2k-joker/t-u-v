@@ -122,6 +122,8 @@ class EditProfileViewController: UIViewController {
             if error != nil {
                 debugPrint(error.debugDescription)
                 self.presentMessage(message: Constants.UIAlertMessage.updateFailed.description)
+            } else {
+                HelperMethods.setUsername(to: self.usernameTextField.text!)
             }
         }
     }

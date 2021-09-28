@@ -64,4 +64,20 @@ class TwitterApiSchemas {
             case newestId = "newest_id"
         }
     }
+    
+    struct ApiClientError: Decodable {
+        let detail: String
+        let title: String
+    }
+}
+
+extension TwitterApiSchemas.ApiClientError: LocalizedError, CustomDebugStringConvertible {
+    var debugDescription: String {
+        return detail
+    }
+    
+    var errorDescription: String? {
+        return "title: \(title)\ndetails: \(detail)"
+    }
+    
 }

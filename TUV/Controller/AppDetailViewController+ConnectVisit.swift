@@ -8,63 +8,137 @@
 import UIKit
 
 extension AppDetailViewController {
-    func connectToApp(of type: Constants.AppType) {
+    func connectToApp(of type: Constants.AppType?) {
         switch type {
         case .instagram:
             ()
         case .twitter:
             connectToTwitter()
         case .youtube:
-            ()
+            connectToYoutube()
+        default:
+            presentErrorMessage()
+        }
+    }
+    
+    func visitApp(of type: Constants.AppType?) {
+        if let appType = type {
+            getAppData(for: appType) { appData in
+                if let appData = appData {
+                    HelperMethods.visitPage(for: appType, with: appData, context: .profile)
+                } else {
+                    self.presentErrorMessage()
+                }
+            }
+        } else {
+            presentErrorMessage()
         }
     }
 
     fileprivate func connectToTwitter() {
-        presentInputView { twitterHandle in
+        let promptMessage = "Please enter your twitter handle below:"
+        
+        presentInputView(message: promptMessage) { action, twitterHandle in
             let username = twitterHandle.trim(by: "@")
            
-            TwitterApiClient.getUser(username: username) { userData, error in
-                if let userData = userData {
-                    let update = ["accountId": userData.id, "username": userData.username]
-                    let failureMessage = "Failed to connect your twitter account. Please check your input and connection."
+            if action.title != "Cancel" {
+                TwitterApiClient.getUser(username: username) { userData, error in
+                    if let userData = userData {
+                        let update = ["accountId": userData.id, "appUsername": userData.username, "imageName": Constants.AppType.twitter.imageName]
 
-                    self.dbReference.child("users/\(self.currentUser.uid)/connectedApps/Twitter").updateChildValues(update) { error, reference in
-                        if error != nil {
-                            debugPrint("Error updating user twitter info: \(error.debugDescription)")
-                            self.presentErrorMessage(message: failureMessage)
+                        self.dbReference.child("users/\(self.currentUser.uid)/connectedApps/Twitter").updateChildValues(update) { error, reference in
+                            if error != nil {
+                                debugPrint("Error updating user twitter info: \(error.debugDescription)")
+                                self.presentErrorMessage()
+                            }
+                        }
+                    } else {
+                        if let customError = error as? TwitterApiSchemas.ApiClientError {
+                            self.presentErrorMessage(title: customError.title, message: customError.detail)
+                        } else {
+                            self.presentErrorMessage()
                         }
                     }
-                } else {
-                    self.presentErrorMessage(message: error.debugDescription)
-                }
 
+                }
             }
         }
     }
     
-    fileprivate func presentInputView(completionHandler: @escaping ((String) -> Void)) {
-        let alertVC = UIAlertController(title: nil, message: "Please enter your twitter handle below.", preferredStyle: .alert)
+    func connectToYoutube() {
+        let promptMessage = "Please enter your Channel Id (Profile -> Settings -> Advanced settings -> Channel ID) below:"
+        
+        presentInputView(message: promptMessage) { action, channelId in
+            if action.title != "Cancel" {
+                YoutubeApiClient.getChannel(with: channelId) { channelResponse, error in
+                    if let channelResponse = channelResponse {
+                        guard channelResponse.pageInfo.totalResults > 0 else {
+                            let channelNotFoundError = "No such channel with Channel ID [\(channelId)]."
+                            self.presentErrorMessage(message: channelNotFoundError)
+                            return
+                        }
+                        
+                        let channelObject = channelResponse.items.first!
+                        let channelId = channelObject.id
+                        let playlistId = channelObject.contentDetails.relatedPlaylists.playlistId
+                        let update = ["channelId": channelId, "playlistId": playlistId, "imageName": Constants.AppType.youtube.imageName]
+                        
+                        self.dbReference.child("users/\(self.currentUser.uid)/connectedApps/YouTube").updateChildValues(update) { error, reference in
+                            if error != nil {
+                                debugPrint("Error updating user youtube info: \(error.debugDescription)")
+                                self.presentErrorMessage()
+                            }
+                        }
+                    } else if let customError = error as? YoutubeApiSchemas.ApiClientErrorObject {
+                        self.presentErrorMessage(message: customError.message)
+                    } else {
+                        self.presentErrorMessage()
+                    }
+                }
+            }
+        }
+    }
+    
+    func getAppData(for appType: Constants.AppType, completionHandler: @escaping (([String:Any]?) -> Void)) {
+        dbReference.child("users/\(currentUser.uid)/connectedApps").getData { error, snapshot in
+            if snapshot.exists() {
+                let connectedAppsData = snapshot.value as? [String:Any]
+                let appData = connectedAppsData?[appType.rawValue] as? [String:String]
+                
+                if let appData = appData {
+                    completionHandler(appData)
+                } else {
+                    completionHandler(nil)
+                }
+            } else {
+                completionHandler(nil)
+            }
+        }
+    }
+    
+    fileprivate func presentInputView(message: String, completionHandler: @escaping ((UIAlertAction, String) -> Void)) {
+        let alertVC = UIAlertController(title: nil, message: message, preferredStyle: .alert)
         alertVC.addTextField { textField in
             textField.placeholder = "e.g @my_handle"
         }
-        alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in completionHandler("") }))
+        alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in completionHandler(action, "") }))
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
             if let textFieldText = alertVC.textFields?.first?.text {
-                DispatchQueue.main.async {
-                    completionHandler(textFieldText)
-                }
+//                DispatchQueue.main.async {
+                    completionHandler(action, textFieldText)
+//                }
             } else {
-                DispatchQueue.main.async {
-                    completionHandler("")
-                }
+//                DispatchQueue.main.async {
+                    completionHandler(action, "")
+//                }
             }
         }))
         
         self.present(alertVC, animated: true, completion: nil)
     }
     
-    fileprivate func presentErrorMessage(message: String) {
-        let alertVC = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+    fileprivate func presentErrorMessage(title: String? = nil, message: String = Constants.UIAlertMessage.authFailure(.connectApp).description) {
+        let alertVC = UIAlertController(title: title ?? "Error", message: message, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         self.present(alertVC, animated: true, completion: nil)
     }

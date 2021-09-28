@@ -31,6 +31,7 @@ class LoginViewController: UIViewController {
         super.viewWillAppear(animated)
         
         signupButton.setTitleColor(.lightGray, for: .disabled)
+        usernameTextField.text = HelperMethods.getUsername()
         passwordTextField.text?.removeAll()
         configureUI(loggingIn: false)
     }
@@ -40,9 +41,11 @@ class LoginViewController: UIViewController {
         unsubscribeFromKeyboardNotifications()
     }
     
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        // TODO: ???
-//    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "loginSegue" {
+            HelperMethods.setAppsAuthSettings()
+        }
+    }
 
     // MARK: Actions
     @IBAction func loginTapped(_ sender: UIButton) {
@@ -98,9 +101,9 @@ class LoginViewController: UIViewController {
     func resendEmailVerification() {
         currentUser.sendEmailVerification { error in
             if error != nil {
-                self.presentErrorMessage(Constants.UIAlertMessage.authFailure(.sendVerificationLink).description)
+                self.presentErrorMessage(title: "Error", Constants.UIAlertMessage.authFailure(.sendVerificationLink).description)
             } else {
-                self.presentErrorMessage(Constants.UIAlertMessage.emailVerificationSent(self.currentUser.email!).description)
+                self.presentErrorMessage(title: nil, Constants.UIAlertMessage.emailVerificationSent(self.currentUser.email!).description)
             }
         }
     }
@@ -138,9 +141,9 @@ class LoginViewController: UIViewController {
         return nil
     }
 
-    func presentErrorMessage(_ message: String) {
+    func presentErrorMessage(title: String? = "Login Error", _ message: String) {
         let verifyEmail = Constants.UIAlertMessage.verifyEmail
-        let alertVC = UIAlertController(title: "Login Error", message: message.description, preferredStyle: .alert)
+        let alertVC = UIAlertController(title: title, message: message.description, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
             self.configureUI(loggingIn: false)
         }))

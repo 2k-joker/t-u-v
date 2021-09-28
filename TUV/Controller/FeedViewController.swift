@@ -19,7 +19,7 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
         return [
             newChildViewController(storyboardId: "TwitterViewController"),
             newChildViewController(storyboardId: "InstagramViewController"),
-            newChildViewController(storyboardId: "YoutubeViewController")
+            newChildViewController(storyboardId: "YouTubeViewController")
         ]
     }()
     
@@ -94,7 +94,7 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
     }
     
     func configurePageControl() {
-        pageControl = HelperMethods.configurePageControl(numberOfPages: feedChildViewControllers.count)
+        pageControl = ApplicationBuilders.buildPageControl(withNumberOfPages: feedChildViewControllers.count)
         self.view.addSubview(pageControl)
     }
     

@@ -42,11 +42,17 @@ class ConfirmSignupViewController: UIViewController {
         termsAndPoliciesButton.setTitleColor(.lightGray, for: .disabled)
         configureUI(signingUp: false)
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "confirmSignupSegue" {
+            HelperMethods.setAppsAuthSettings()
+        }
+    }
 
     // MARK: Actions
     @IBAction func signupTapped(_ sender: UIButton) {
         configureUI(signingUp: true)
-        createUser()
+        signupUser()
     }
     
     // MARK: Functions
@@ -58,23 +64,33 @@ class ConfirmSignupViewController: UIViewController {
         signingUp ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
     }
     
-    func createUser() {
+    func signupUser() {
         Auth.auth().createUser(withEmail: userInfo["email"]!, password: userInfo["password"]!) { result, error in
             if error != nil {
                 self.presentSignupError()
             } else {
-                let dbReference = Database.database().reference()
-                let userData = [
-                    "username": self.userInfo["username"],
-                    "email": self.userInfo["email"],
-                    "avatarName": self.userInfo["avatarName"],
-                    "mobileNumber": self.userInfo["mobileNumber"]
-                ]
-
-                dbReference.child("users/\(result!.user.uid)").setValue(userData)
-                
+                self.createUserRecord(for: result!.user)
+            }
+        }
+    }
+    
+    func createUserRecord(for user: User) {
+        let dbReference = Database.database().reference()
+        let userData = [
+            "username": userInfo["username"],
+            "email": userInfo["email"],
+            "avatarName": userInfo["avatarName"],
+            "mobileNumber": userInfo["mobileNumber"]
+        ]
+        
+        dbReference.child("users/\(user.uid)").setValue(userData) { error, reference in
+            if error != nil {
+                self.presentSignupError()
+                Auth.auth().currentUser!.delete(completion: nil)
+            } else {
+                HelperMethods.setUsername(to: self.userInfo["username"])
                 self.configureUI(signingUp: false)
-                self.sendUserEmailVerification(for: result!.user)
+                self.sendUserEmailVerification(for: user)
             }
         }
     }
@@ -83,9 +99,9 @@ class ConfirmSignupViewController: UIViewController {
         user.sendEmailVerification { error in
             if error != nil {
                 debugPrint(error.debugDescription)
-            } else {
-                self.performSegue(withIdentifier: "confirmSignupSegue", sender: nil)
             }
+
+            self.performSegue(withIdentifier: "confirmSignupSegue", sender: nil)
         }
     }
 
