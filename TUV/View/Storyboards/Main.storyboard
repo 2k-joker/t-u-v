@@ -46,9 +46,6 @@
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
-                                        <connections>
-                                            <outlet property="delegate" destination="Wgo-qW-DqX" id="Odo-Bd-DX7"/>
-                                        </connections>
                                     </textField>
                                 </subviews>
                                 <constraints>
@@ -188,7 +185,6 @@
                                         <textInputTraits key="textInputTraits" keyboardType="emailAddress" returnKeyType="done" textContentType="email"/>
                                         <connections>
                                             <action selector="emailTyped:" destination="7iG-nr-G7N" eventType="editingDidEnd" id="3R4-jR-Npz"/>
-                                            <outlet property="delegate" destination="7iG-nr-G7N" id="k40-Oe-iD5"/>
                                         </connections>
                                     </textField>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Mobile Number (Optional)" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MqI-JN-g5M">
@@ -200,7 +196,6 @@
                                         <textInputTraits key="textInputTraits" keyboardType="numberPad" smartDashesType="yes" textContentType="tel"/>
                                         <connections>
                                             <action selector="numberTyped:" destination="7iG-nr-G7N" eventType="editingDidEnd" id="Kgz-2e-WXR"/>
-                                            <outlet property="delegate" destination="7iG-nr-G7N" id="imR-mp-Q8T"/>
                                         </connections>
                                     </textField>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Username" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="EJg-YV-tVy">
@@ -212,7 +207,6 @@
                                         <textInputTraits key="textInputTraits" textContentType="username"/>
                                         <connections>
                                             <action selector="usernameTyped:" destination="7iG-nr-G7N" eventType="editingDidEnd" id="IR9-sL-EC2"/>
-                                            <outlet property="delegate" destination="7iG-nr-G7N" id="hi3-cd-Jjj"/>
                                         </connections>
                                     </textField>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="VPh-Dk-JTi" userLabel="Password Stack">
@@ -224,7 +218,6 @@
                                                 <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
                                                 <connections>
                                                     <action selector="passwordTyped:" destination="7iG-nr-G7N" eventType="editingDidEnd" id="o9k-8b-CGu"/>
-                                                    <outlet property="delegate" destination="7iG-nr-G7N" id="MvH-Bf-jtV"/>
                                                 </connections>
                                             </textField>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YPb-Tg-wza">
@@ -251,7 +244,6 @@
                                                 <textInputTraits key="textInputTraits" secureTextEntry="YES" textContentType="password"/>
                                                 <connections>
                                                     <action selector="passwordConfirmed:" destination="7iG-nr-G7N" eventType="editingDidEnd" id="cbR-oP-58r"/>
-                                                    <outlet property="delegate" destination="7iG-nr-G7N" id="lKJ-s7-x2i"/>
                                                 </connections>
                                             </textField>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2A2-ge-qie">
@@ -480,9 +472,6 @@
                                                 <rect key="frame" x="0.0" y="33" width="374" height="33"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits"/>
-                                                <connections>
-                                                    <outlet property="delegate" destination="tdn-tK-yBC" id="PI9-7T-EAR"/>
-                                                </connections>
                                             </textField>
                                         </subviews>
                                     </stackView>
@@ -499,9 +488,6 @@
                                                 <rect key="frame" x="0.0" y="33" width="374" height="33"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits"/>
-                                                <connections>
-                                                    <outlet property="delegate" destination="tdn-tK-yBC" id="LaS-Xc-H98"/>
-                                                </connections>
                                             </textField>
                                         </subviews>
                                     </stackView>
@@ -534,9 +520,6 @@
                                                 <rect key="frame" x="0.0" y="33" width="374" height="33"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits"/>
-                                                <connections>
-                                                    <outlet property="delegate" destination="tdn-tK-yBC" id="4lA-nW-cgk"/>
-                                                </connections>
                                             </textField>
                                         </subviews>
                                     </stackView>
@@ -553,9 +536,6 @@
                                                 <rect key="frame" x="0.0" y="33" width="374" height="33"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits"/>
-                                                <connections>
-                                                    <outlet property="delegate" destination="tdn-tK-yBC" id="meB-Fp-DPP"/>
-                                                </connections>
                                             </textField>
                                         </subviews>
                                     </stackView>
@@ -1219,18 +1199,18 @@
             <objects>
                 <viewController storyboardIdentifier="AddFriendsViewController" id="oqP-CT-lBa" customClass="AddFriendsViewController" customModule="TUV" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="mPQ-qs-wC5">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <searchBar contentMode="redraw" searchBarStyle="prominent" placeholder="Find friends" translatesAutoresizingMaskIntoConstraints="NO" id="DP0-gN-dun">
-                                <rect key="frame" x="0.0" y="88" width="414" height="51"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="51"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
                                     <outlet property="delegate" destination="oqP-CT-lBa" id="Rdq-5b-pij"/>
                                 </connections>
                             </searchBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="UOu-NX-77r">
-                                <rect key="frame" x="0.0" y="144" width="414" height="669"/>
+                                <rect key="frame" x="0.0" y="56" width="414" height="752"/>
                                 <inset key="separatorInset" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationLevel="2" indentationWidth="0.0" reuseIdentifier="addFriendCell" rowHeight="70" id="q0j-CP-AiY" customClass="AddFriendCell" customModule="TUV" customModuleProvider="target">
@@ -1265,7 +1245,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qxg-Zd-ajC" userLabel="Add Friend Tapped">
-                                                    <rect key="frame" x="305" y="19" width="89" height="32.5"/>
+                                                    <rect key="frame" x="290" y="16.5" width="104" height="37.5"/>
                                                     <state key="normal" image="add_friend_button"/>
                                                     <connections>
                                                         <action selector="addFriendTapped:forEvent:" destination="q0j-CP-AiY" eventType="touchUpInside" id="Keq-1h-SIX"/>
@@ -1769,15 +1749,15 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="8yf-8N-aZL"/>
-        <segue reference="RFv-Qq-F6G"/>
-        <segue reference="Hup-WR-Rkb"/>
-        <segue reference="K6h-Wa-OOR"/>
-        <segue reference="MpO-E2-Odh"/>
+        <segue reference="e3W-pn-JPr"/>
+        <segue reference="6dZ-CY-iZz"/>
+        <segue reference="3OU-BZ-zy3"/>
+        <segue reference="xjo-Vd-IWP"/>
+        <segue reference="8ZC-vm-8KZ"/>
         <segue reference="d2V-Uf-hVT"/>
     </inferredMetricsTieBreakers>
     <resources>
-        <image name="add_friend_button" width="89" height="32.5"/>
+        <image name="add_friend_button" width="104" height="37.5"/>
         <image name="avatar_select_button" width="210" height="50"/>
         <image name="cancel_button_green" width="77" height="23"/>
         <image name="connect_apps_button" width="160" height="35"/>

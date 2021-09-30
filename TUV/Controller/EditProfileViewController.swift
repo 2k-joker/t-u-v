@@ -47,7 +47,6 @@ class EditProfileViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        unsubscribeFromKeyboardNotifications()
         dbReference.child("users/\(currentUser.uid)").removeObserver(withHandle: _avatarChangedRefHandle)
     }
 
@@ -253,53 +252,5 @@ class EditProfileViewController: UIViewController {
         }
         
         return nil
-    }
-}
-
-extension EditProfileViewController: UITextFieldDelegate {
-    // MARK: Textfield Delegates
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        let subjectTextFields = [mobileNumberTextField, passwordTextField, confirmPasswordTextField]
-        if subjectTextFields.contains(textField) {
-            subscribeToKeyboardNotifications()
-        } else {
-            unsubscribeFromKeyboardNotifications()
-        }
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        
-        return true
-    }
-    
-    // MARK: Show/Hide Keyboard
-    @objc func keyboardWillHide(_ notification: Notification) {
-        view.frame.origin.y = 0
-    }
-    
-    @objc func keyboardWillShow(_ notification: Notification) {
-        if view.frame.origin.y == 0 {
-            view.frame.origin.y -= keyboardHeight(notification)
-        }
-    }
-
-    func keyboardHeight(_ notification: Notification) -> CGFloat {
-        let userInfo = notification.userInfo
-        let keyboardSize = userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! NSValue
-        return keyboardSize.cgRectValue.height
-    }
-    
-    func subscribeToKeyboardNotifications() {
-        subscribeToNotification(UIResponder.keyboardWillShowNotification, selector: #selector(keyboardWillShow(_:)))
-        subscribeToNotification(UIResponder.keyboardWillHideNotification, selector: #selector(keyboardWillHide(_:)))
-    }
-    
-    func subscribeToNotification(_ name: NSNotification.Name, selector: Selector) {
-        NotificationCenter.default.addObserver(self, selector: selector, name: name, object: nil)
-    }
-    
-    func unsubscribeFromKeyboardNotifications() {
-        NotificationCenter.default.removeObserver(self)
     }
 }
