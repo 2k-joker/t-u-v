@@ -182,6 +182,9 @@ extension FriendsViewController: UITableViewDelegate, UITableViewDataSource {
         cell.friendImageView.image = UIImage(named: "robot_avatar")
         cell.usernameLabel.text = "username"
         cell.detailsLabel.text = ""
+        
+        // TODO: implement new content indicator
+        cell.newContentIndicator.isHidden = true
 
         dbReference.child("users/\(friendUid)").getData { error, snapshot in
             if error != nil {
@@ -201,10 +204,6 @@ extension FriendsViewController: UITableViewDelegate, UITableViewDataSource {
             }
         }
 
-        // TODO: implement new content indicator
-//        if indexPath.row.isMultiple(of: 2) {
-//            cell.newContentIndicator.isHidden = true
-//        }
         return cell
     }
     

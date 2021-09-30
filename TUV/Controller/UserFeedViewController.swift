@@ -55,7 +55,10 @@ class UserFeedViewController: UIPageViewController, UIPageViewControllerDataSour
     
     private func configurePageControl() {
         pageControl = ApplicationBuilders.buildPageControl(withNumberOfPages: feedChildViewControllers.count)
-        self.view.addSubview(pageControl)
+        
+        if feedChildViewControllers.count > 1 {
+            self.view.addSubview(pageControl)
+        }
     }
     
     // MARK: Page view delegates
@@ -68,6 +71,8 @@ class UserFeedViewController: UIPageViewController, UIPageViewControllerDataSour
         guard let currentViewControllerIndex = feedChildViewControllers.firstIndex(of: viewController) else {
             return nil
         }
+        
+        guard feedChildViewControllers.count > 1 else { return nil }
         
         let previousIndex = currentViewControllerIndex - 1
         
@@ -84,6 +89,8 @@ class UserFeedViewController: UIPageViewController, UIPageViewControllerDataSour
         guard let currentViewControllerIndex = feedChildViewControllers.firstIndex(of: viewController) else {
             return nil
         }
+        
+        guard feedChildViewControllers.count > 1 else { return nil }
         
         let nextIndex = currentViewControllerIndex + 1
         

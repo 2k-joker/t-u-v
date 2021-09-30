@@ -51,7 +51,8 @@ class AppsViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        dbReference.removeAllObservers()
+        dbReference.child("users/\(currentUser.uid)/connectedApps").removeAllObservers()
+        dbReference.child("apps").removeObserver(withHandle: _appAddedRefHandle)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -70,6 +71,7 @@ class AppsViewController: UIViewController {
 
             self.updateCurrentSelectedCell(with: "connected")
             self.appsConnectionStatusMap[snapshot.key] = "connected"
+            self.appsTableView.reloadData()
             self.updateFinishButton()
         })
     }
@@ -79,6 +81,7 @@ class AppsViewController: UIViewController {
             
             self.updateCurrentSelectedCell(with: "disconnected")
             self.appsConnectionStatusMap[snapshot.key] = "disconnected"
+            self.appsTableView.reloadData()
             self.updateFinishButton()
         })
     }

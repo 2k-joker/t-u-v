@@ -65,9 +65,9 @@ extension AppDetailViewController {
     }
     
     func connectToYoutube() {
-        let promptMessage = "Please enter your YouTube Channel Id (Profile -> Settings -> Advanced settings -> Channel ID) below:"
+        let promptMessage = "Please enter your YouTube Channel Id  below:\n(Profile -> Settings -> Advanced settings -> Channel ID)"
         
-        presentInputView(message: promptMessage) { action, channelId in
+        presentInputView(message: promptMessage, placeholderText: "e.g ABCxyZabC123Xyz-9aBc") { action, channelId in
             if action.title != "Cancel" {
                 YoutubeApiClient.getChannel(with: channelId) { channelResponse, error in
                     if let channelResponse = channelResponse {
@@ -115,11 +115,11 @@ extension AppDetailViewController {
         }
     }
     
-    fileprivate func presentInputView(message: String, completionHandler: @escaping ((UIAlertAction, String) -> Void)) {
+    fileprivate func presentInputView(message: String, placeholderText: String? = nil, completionHandler: @escaping ((UIAlertAction, String) -> Void)) {
         let alertVC = UIAlertController(title: nil, message: message, preferredStyle: .alert)
 
         alertVC.addTextField { textField in
-            textField.placeholder = "e.g @my_handle"
+            textField.placeholder = placeholderText ?? "e.g @my_handle"
         }
         alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in completionHandler(action, "") }))
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in

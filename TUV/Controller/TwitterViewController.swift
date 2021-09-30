@@ -150,7 +150,10 @@ class TwitterViewController: UIViewController {
             if snapshot.exists() {
                 let twitterData = snapshot.value as! [String: Any]
                 let authorization = twitterData["authorization"] as? String
-                TwitterApiClient.authorization = authorization ?? ""
+                
+                if TwitterApiClient.authorization.isEmpty {
+                    TwitterApiClient.authorization = authorization ?? ""
+                }
             } else {
                 debugPrint("Unable to retrieve app data: \(error.debugDescription)")
             }

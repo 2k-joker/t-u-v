@@ -151,7 +151,7 @@ class YoutubeViewController: UIViewController {
     
     func updateMediaView(with thumbnailUrl: URL?) {
         guard let thumbnailUrl = thumbnailUrl else {
-            errorLabel.text = "⚠️ Download failed!"
+            errorLabel.text = "⚠️ Content unavailable"
             errorLabel.isHidden = false
             return
         }
@@ -173,7 +173,10 @@ class YoutubeViewController: UIViewController {
             if snapshot.exists() {
                 let youtubeData = snapshot.value as! [String: Any]
                 let apiKey = youtubeData["apiKey"] as? String
-                YoutubeApiClient.apiKey = apiKey ?? ""
+                
+                if YoutubeApiClient.apiKey.isEmpty {
+                    YoutubeApiClient.apiKey = apiKey ?? ""
+                }
             } else {
                 debugPrint("Unable to retrieve app data: \(error.debugDescription)")
             }

@@ -82,7 +82,6 @@ class TwitterApiClient {
         apiRequest.httpMethod = "GET"
         apiRequest.addValue(authorization, forHTTPHeaderField: "Authorization")
     
-        debugPrint(apiRequest.url)
         let task = URLSession.shared.dataTask(with: apiRequest) { data, response, error in
             guard let data = data else {
                 DispatchQueue.main.async {

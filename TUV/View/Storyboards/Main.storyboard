@@ -1199,18 +1199,18 @@
             <objects>
                 <viewController storyboardIdentifier="AddFriendsViewController" id="oqP-CT-lBa" customClass="AddFriendsViewController" customModule="TUV" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="mPQ-qs-wC5">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <searchBar contentMode="redraw" searchBarStyle="prominent" placeholder="Find friends" translatesAutoresizingMaskIntoConstraints="NO" id="DP0-gN-dun">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="51"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="51"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <connections>
                                     <outlet property="delegate" destination="oqP-CT-lBa" id="Rdq-5b-pij"/>
                                 </connections>
                             </searchBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="UOu-NX-77r">
-                                <rect key="frame" x="0.0" y="56" width="414" height="752"/>
+                                <rect key="frame" x="0.0" y="144" width="414" height="669"/>
                                 <inset key="separatorInset" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationLevel="2" indentationWidth="0.0" reuseIdentifier="addFriendCell" rowHeight="70" id="q0j-CP-AiY" customClass="AddFriendCell" customModule="TUV" customModuleProvider="target">
@@ -1591,7 +1591,6 @@
                                     <color key="titleColor" red="0.60893039630000001" green="0.26426027010000003" blue="0.75910115980000004" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </state>
                                 <connections>
-                                    <action selector="finishButtonTapped:" destination="0po-Iz-Sqm" eventType="touchUpInside" id="Zot-kA-Wq6"/>
                                     <segue destination="YyY-wM-z2g" kind="presentation" modalPresentationStyle="fullScreen" id="RFv-Qq-F6G"/>
                                 </connections>
                             </button>
@@ -1750,7 +1749,7 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="e3W-pn-JPr"/>
-        <segue reference="6dZ-CY-iZz"/>
+        <segue reference="RFv-Qq-F6G"/>
         <segue reference="3OU-BZ-zy3"/>
         <segue reference="xjo-Vd-IWP"/>
         <segue reference="8ZC-vm-8KZ"/>

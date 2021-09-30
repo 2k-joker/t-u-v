@@ -73,7 +73,6 @@ class AddFriendsViewController: UIViewController, ButtonDelegate {
     func addFriendship(for addedFriendUid: String, at indexPath: IndexPath, by addButton: UIButton) {
         dbReference.child("friendships").updateChildValues(["\(currentUser.uid)+\(addedFriendUid)": true]) { error, reference in
             if error != nil {
-                debugPrint(error.debugDescription)
                 self.presentErrorMessage(Constants.UIAlertMessage.updateFailed.description)
                 addButton.isHidden = false
             }
@@ -188,10 +187,8 @@ extension AddFriendsViewController: UISearchBarDelegate {
                     return self.otherUsersList.contains($0.key) && matchesSearchText
                 }
                 
-                if true || !matchingUsersSnapshots.isEmpty {
-                    self.notAddedUsers = matchingUsersSnapshots.map { $0.key }
-                    self.friendsTableView.reloadData()
-                }
+                self.notAddedUsers = matchingUsersSnapshots.map { $0.key }
+                self.friendsTableView.reloadData()
             }
         }
     }
