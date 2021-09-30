@@ -18,7 +18,7 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
     private(set) lazy var feedChildViewControllers: [UIViewController?] = {
         return [
             newChildViewController(storyboardId: "TwitterViewController"),
-            newChildViewController(storyboardId: "InstagramViewController"),
+            // newChildViewController(storyboardId: "InstagramViewController"),
             newChildViewController(storyboardId: "YouTubeViewController")
         ]
     }()

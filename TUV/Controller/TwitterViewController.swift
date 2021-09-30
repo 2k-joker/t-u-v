@@ -11,7 +11,7 @@ import FirebaseDatabase
 
 class TwitterViewController: UIViewController {
     //MARK: Properties
-    var friendUid: String = ""
+    fileprivate var friendUid: String = ""
     fileprivate let dbRference = Database.database().reference()
     fileprivate let currentUser = Auth.auth().currentUser!
     fileprivate var currentUserFriends: [String] = []
@@ -26,6 +26,8 @@ class TwitterViewController: UIViewController {
     // MARK: View States
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        friendUid = (self.parent as? UserFeedViewController)?.userUid ?? ""
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -110,7 +112,8 @@ class TwitterViewController: UIViewController {
 
     func updateUserLatestTweetId(with newTweetId: String) {
         if userTwitterData["latestTweetId"] != newTweetId {
-            dbRference.child("users/\(friendUid)/connectedApps/Twitter").updateChildValues(["latestTweetId": newTweetId])
+            let userUid = friendUid.isEmpty ? currentUser.uid : friendUid
+            dbRference.child("users/\(userUid)/connectedApps/Twitter").updateChildValues(["latestTweetId": newTweetId])
         }
     }
 

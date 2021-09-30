@@ -49,6 +49,14 @@ class HelperMethods {
         
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
+    
+    class func makeAttributedBoldString(for textToBold: String, from text: String) -> NSMutableAttributedString {
+        let attributedString = NSMutableAttributedString(string: text)
+        let rangeToBold = NSRange(text.range(of: textToBold)!, in: text)
+        
+        attributedString.addAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 17)], range: rangeToBold)
+        return attributedString
+    }
 }
 
 protocol FriendCell {

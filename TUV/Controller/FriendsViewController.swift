@@ -66,6 +66,7 @@ class FriendsViewController: UIViewController, ButtonDelegate {
         case "friendFeedSegue":
             let friendFeedVC = segue.destination as! UserFeedViewController
             friendFeedVC.userConnectedApps = selectedFriendConnectedApps
+            friendFeedVC.userUid = selectedFriendUid
         case "addFriendsSegue":
             let addFriendsVC = segue.destination as! AddFriendsViewController
             addFriendsVC.otherUsersList = otherUsers
@@ -200,16 +201,14 @@ extension FriendsViewController: UITableViewDelegate, UITableViewDataSource {
             }
         }
 
-        if indexPath.row.isMultiple(of: 2) {
-            cell.newContentIndicator.isHidden = true
-        }
+        // TODO: implement new content indicator
+//        if indexPath.row.isMultiple(of: 2) {
+//            cell.newContentIndicator.isHidden = true
+//        }
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // TODO: Get friend at index path
-//        let friend = addedFriends[indexPath.row]
-        
         dbReference.child("users/\(addedFriendsUids[indexPath.row])/connectedApps").getData { error, snapshot in
             if snapshot.exists() {
                 self.selectedFriendConnectedApps = snapshot
@@ -219,7 +218,6 @@ extension FriendsViewController: UITableViewDelegate, UITableViewDataSource {
             } else {
                 tableView.deselectRow(at: indexPath, animated: true)
                 debugPrint(error.debugDescription)
-                // TODO: Present error getting user detals alert
             }
         }
     }

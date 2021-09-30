@@ -12,6 +12,7 @@ import FirebaseDatabase
 class UserFeedViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate  {
     // MARK: Properties
     var userConnectedApps: DataSnapshot!
+    var userUid: String!
     fileprivate var pageControl: UIPageControl = UIPageControl()
     fileprivate var feedChildViewControllers: [UIViewController?]!
     
@@ -87,6 +88,7 @@ class UserFeedViewController: UIPageViewController, UIPageViewControllerDataSour
         let nextIndex = currentViewControllerIndex + 1
         
         guard feedChildViewControllers.count > nextIndex else {
+            
             return feedChildViewControllers.first!
         }
         

@@ -133,6 +133,7 @@
                         <outlet property="usernameTextField" destination="mOi-4T-fym" id="xCg-g9-VHM"/>
                         <segue destination="YyY-wM-z2g" kind="presentation" identifier="loginSegue" modalPresentationStyle="fullScreen" id="8Og-RY-Bp6"/>
                         <segue destination="KzD-2u-6pQ" kind="show" identifier="verificationSegue" id="67M-fB-jAX"/>
+                        <segue destination="0po-Iz-Sqm" kind="presentation" identifier="loginToConnectAppsSegue" modalPresentationStyle="fullScreen" id="8yf-8N-aZL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ytX-6u-jcW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1224,6 +1225,9 @@
                             <searchBar contentMode="redraw" searchBarStyle="prominent" placeholder="Find friends" translatesAutoresizingMaskIntoConstraints="NO" id="DP0-gN-dun">
                                 <rect key="frame" x="0.0" y="88" width="414" height="51"/>
                                 <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="oqP-CT-lBa" id="Rdq-5b-pij"/>
+                                </connections>
                             </searchBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="UOu-NX-77r">
                                 <rect key="frame" x="0.0" y="144" width="414" height="669"/>
@@ -1607,7 +1611,8 @@
                                     <color key="titleColor" red="0.60893039630000001" green="0.26426027010000003" blue="0.75910115980000004" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </state>
                                 <connections>
-                                    <segue destination="YyY-wM-z2g" kind="presentation" modalPresentationStyle="fullScreen" id="mLZ-V1-qtr"/>
+                                    <action selector="finishButtonTapped:" destination="0po-Iz-Sqm" eventType="touchUpInside" id="Zot-kA-Wq6"/>
+                                    <segue destination="YyY-wM-z2g" kind="presentation" modalPresentationStyle="fullScreen" id="RFv-Qq-F6G"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -1764,11 +1769,11 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="e3W-pn-JPr"/>
-        <segue reference="8Og-RY-Bp6"/>
+        <segue reference="8yf-8N-aZL"/>
+        <segue reference="RFv-Qq-F6G"/>
         <segue reference="Hup-WR-Rkb"/>
-        <segue reference="2lP-Re-MZt"/>
-        <segue reference="8ZC-vm-8KZ"/>
+        <segue reference="K6h-Wa-OOR"/>
+        <segue reference="MpO-E2-Odh"/>
         <segue reference="d2V-Uf-hVT"/>
     </inferredMetricsTieBreakers>
     <resources>

@@ -13,6 +13,7 @@ class LoginViewController: UIViewController {
     // MARK: Properties
     fileprivate let credsVerificationSegue = "verificationSegue"
     fileprivate var currentUser: User!
+    fileprivate let dbReference = Database.database().reference()
 
     // MARK: Outlets
     @IBOutlet weak var usernameTextField: UITextField!
@@ -55,7 +56,7 @@ class LoginViewController: UIViewController {
             configureUI(loggingIn: false)
             presentErrorMessage(validationError)
         } else {
-            Database.database().reference().child("users").queryOrdered(byChild: "username").queryEqual(toValue: usernameTextField.text).getData { error, snapshot in
+            dbReference.child("users").queryOrdered(byChild: "username").queryEqual(toValue: usernameTextField.text).getData { error, snapshot in
                 if error != nil {
                     debugPrint(error.debugDescription)
                     
@@ -92,9 +93,19 @@ class LoginViewController: UIViewController {
     
     func checkCurrentUserEmailVerified() {
         if currentUser.isEmailVerified {
-            self.performSegue(withIdentifier: "loginSegue", sender: nil)
+            self.checkCurrentUserHasConnectedApps()
         } else {
             presentErrorMessage(Constants.UIAlertMessage.verifyEmail.description)
+        }
+    }
+    
+    func checkCurrentUserHasConnectedApps() {
+        dbReference.child("users/\(currentUser.uid)/connectedApps").getData { error, snapshot in
+            if snapshot.exists() {
+                self.performSegue(withIdentifier: "loginSegue", sender: nil)
+            } else {
+                self.presentErrorMessage(Constants.UIAlertMessage.noConnectedAppsFound.description)
+            }
         }
     }
     
@@ -142,15 +153,20 @@ class LoginViewController: UIViewController {
     }
 
     func presentErrorMessage(title: String? = "Login Error", _ message: String) {
-        let verifyEmail = Constants.UIAlertMessage.verifyEmail
         let alertVC = UIAlertController(title: title, message: message.description, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
             self.configureUI(loggingIn: false)
         }))
 
-        if message == verifyEmail.description {
+        if message == Constants.UIAlertMessage.verifyEmail.description {
             alertVC.addAction(UIAlertAction(title: "Resend Link", style: .default, handler: { action in
                 self.resendEmailVerification()
+            }))
+        }
+        
+        if message == Constants.UIAlertMessage.noConnectedAppsFound.description {
+            alertVC.addAction(UIAlertAction(title: "Connect Apps", style: .default, handler: { action in
+                self.performSegue(withIdentifier: "loginToConnectAppsSegue", sender: nil)
             }))
         }
 

@@ -34,6 +34,7 @@ class AppsViewController: UIViewController {
         finishButton.setTitleColor(.lightGray, for: .disabled)
         finishButton.isEnabled = false
         
+        HelperMethods.setAppsAuthSettings()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -50,7 +51,6 @@ class AppsViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-//        dbReference.child("users/\(currentUser.uid)/connectedApps").removeObserver(withHandle: _appConnectedRefHandle)
         dbReference.removeAllObservers()
     }
     

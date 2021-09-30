@@ -11,7 +11,7 @@ import FirebaseAuth
 
 class YoutubeViewController: UIViewController {
     // MARK: Properties
-    var friendUid: String = ""
+    fileprivate var friendUid: String = ""
     fileprivate let dbRference = Database.database().reference()
     fileprivate let currentUser = Auth.auth().currentUser!
     fileprivate var currentUserFriends: [String] = []
@@ -28,7 +28,9 @@ class YoutubeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        friendUid = (self.parent as? UserFeedViewController)?.userUid ?? ""
         errorLabel.isHidden = true
+
     }
 
     override func viewWillAppear(_ animated: Bool) {

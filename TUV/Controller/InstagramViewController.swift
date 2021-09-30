@@ -8,6 +8,10 @@
 import Foundation
 import UIKit
 
+/*  Not going to implement this because facebook requires a user account to access their API.
+    My disgust for facebook won't allow me create one.
+    Going to leave the skeleton and assets in this project in case it's useful to someone else in the future.
+ */
 class InstagramViewController: UIViewController {
     // MARK: Properties
     

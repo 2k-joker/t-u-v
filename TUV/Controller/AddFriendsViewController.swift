@@ -11,8 +11,8 @@ import FirebaseDatabase
 
 class AddFriendsViewController: UIViewController, ButtonDelegate {
     // MARK: Properties
-    var currentSearchTask: URLSessionTask?
     var otherUsersList: [String]! = []
+    fileprivate var notAddedUsers: [String]! = []
     fileprivate let currentUser = Auth.auth().currentUser!
     fileprivate let dbReference = Database.database().reference()
     fileprivate var _addedRefHandle: DatabaseHandle!
@@ -32,7 +32,7 @@ class AddFriendsViewController: UIViewController, ButtonDelegate {
         
         friendsTableView.delegate = self
         friendsTableView.dataSource = self
-        searchBar.delegate = self
+        notAddedUsers = otherUsersList
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -53,18 +53,22 @@ class AddFriendsViewController: UIViewController, ButtonDelegate {
         case "addFriendFeedSegue":
             let userFeedVC = segue.destination as! UserFeedViewController
             userFeedVC.userConnectedApps = selectedUserConnectedApps
+            userFeedVC.userUid = selectedUserUid
         default:
             () // Do nothing
         }
     }
     
-    // MARK: Actions
-    
-    // MARK: Functions
-    deinit {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
         dbReference.child("friendships").removeObserver(withHandle: _addedRefHandle)
         dbReference.child("friendships").removeObserver(withHandle: _removedRefHandle)
     }
+    
+    // MARK: Actions
+    
+    // MARK: Functions
 
     func addFriendship(for addedFriendUid: String, at indexPath: IndexPath, by addButton: UIButton) {
         dbReference.child("friendships").updateChildValues(["\(currentUser.uid)+\(addedFriendUid)": true]) { error, reference in
@@ -102,7 +106,7 @@ class AddFriendsViewController: UIViewController, ButtonDelegate {
         let tappedIndexPath = friendsTableView.indexPathForRow(at: buttonPosition)
 
         if let indexPath = tappedIndexPath {
-            dbReference.child("users/\(otherUsersList[indexPath.row])").getData { error, snapshot in
+            dbReference.child("users/\(notAddedUsers[indexPath.row])").getData { error, snapshot in
                 if snapshot.exists() {
                     self.selectedUserUid = snapshot.key
 
@@ -123,6 +127,7 @@ class AddFriendsViewController: UIViewController, ButtonDelegate {
             if (addingUserUid == self.currentUser.uid) && (addedUserUid == self.addedFriendUid) {
 
                 self.otherUsersList.remove(at: self.addedFriendIndexPath.row)
+                self.notAddedUsers.remove(at: self.addedFriendIndexPath.row)
                 self.friendsTableView.deleteRows(at: [self.addedFriendIndexPath], with: .left)
             }
         })
@@ -132,9 +137,10 @@ class AddFriendsViewController: UIViewController, ButtonDelegate {
         _removedRefHandle = dbReference.child("friendships").observe(.childRemoved, with: { snapshot in
             let userUid = HelperMethods.splitFriendShipKey(snapshot.key).first
             let removedUid = HelperMethods.splitFriendShipKey(snapshot.key).last!
-            
+
             if userUid == self.currentUser.uid {
                 self.otherUsersList.insert(removedUid, at: 0)
+                self.notAddedUsers.insert(removedUid, at: 0)
                 self.friendsTableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .left)
             }
         })
@@ -150,9 +156,12 @@ class AddFriendsViewController: UIViewController, ButtonDelegate {
 
 extension AddFriendsViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        currentSearchTask?.cancel()
-        // TODO: perform search based on search query
-        currentSearchTask = nil
+        if searchText.isEmpty && notAddedUsers.isEmpty {
+            notAddedUsers = otherUsersList
+            friendsTableView.reloadData()
+        } else {
+            searchUsers(withUsernameMatching: searchText)
+        }
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -165,6 +174,26 @@ extension AddFriendsViewController: UISearchBarDelegate {
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.endEditing(true)
+        notAddedUsers = otherUsersList
+        friendsTableView.reloadData()
+    }
+
+    func searchUsers(withUsernameMatching searchText: String) {
+        dbReference.child("users").getData { error, snapshot in
+            if snapshot.exists() {
+                let allUsers = (snapshot.value as? [String: Any]) ?? [:]
+                let matchingUsersSnapshots = allUsers.filter {
+                    let username = ($0.value as? [String: Any])?["username"] as? String ?? ""
+                    let matchesSearchText = username.lowercased().range(of: searchText.lowercased()) != nil
+                    return self.otherUsersList.contains($0.key) && matchesSearchText
+                }
+                
+                if true || !matchingUsersSnapshots.isEmpty {
+                    self.notAddedUsers = matchingUsersSnapshots.map { $0.key }
+                    self.friendsTableView.reloadData()
+                }
+            }
+        }
     }
 }
 
@@ -174,12 +203,12 @@ extension AddFriendsViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return otherUsersList.count
+        return notAddedUsers.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = friendsTableView.dequeueReusableCell(withIdentifier: AddFriendCell.reuseIdentifier, for: indexPath) as! AddFriendCell
-        let userUid = otherUsersList[indexPath.row]
+        let userUid = notAddedUsers[indexPath.row]
         
         cell.tapDelegate = self
         cell.friendImageView.image = UIImage(named: "robot_avatar")
@@ -210,16 +239,16 @@ extension AddFriendsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        dbReference.child("users/\(otherUsersList[indexPath.row])/connectedApps").getData { error, snapshot in
+        dbReference.child("users/\(notAddedUsers[indexPath.row])/connectedApps").getData { error, snapshot in
             if snapshot.exists() {
                 self.selectedUserConnectedApps = snapshot
+                self.selectedUserUid = self.notAddedUsers[indexPath.row]
 
                 tableView.deselectRow(at: indexPath, animated: true)
                 self.performSegue(withIdentifier: "addFriendFeedSegue", sender: nil)
             } else {
                 tableView.deselectRow(at: indexPath, animated: true)
                 debugPrint(error.debugDescription)
-                // TODO: Present error getting user detals alert
             }
         }
     }

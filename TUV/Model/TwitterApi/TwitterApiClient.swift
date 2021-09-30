@@ -82,6 +82,7 @@ class TwitterApiClient {
         apiRequest.httpMethod = "GET"
         apiRequest.addValue(authorization, forHTTPHeaderField: "Authorization")
     
+        debugPrint(apiRequest.url)
         let task = URLSession.shared.dataTask(with: apiRequest) { data, response, error in
             guard let data = data else {
                 DispatchQueue.main.async {
@@ -90,7 +91,7 @@ class TwitterApiClient {
                 return
             }
             
-//            debugPrint(String(data: data, encoding: .utf8)!)
+            debugPrint(String(data: data, encoding: .utf8)!)
             
             do {
                 let responseObject = try decoder.decode(ResponseType.self, from: data)

@@ -105,6 +105,7 @@ class Constants {
         case updateFailed
         case removeFriendFailed(String)
         case loadDataFailed
+        case noConnectedAppsFound
         
         var description: String {
             switch self {
@@ -124,6 +125,8 @@ class Constants {
                 return "Failed to remove \(friendUsername).\nPlease check your connection and try again."
             case .loadDataFailed:
                 return "Failed to load information.\nPlease check your connection and try again."
+            case .noConnectedAppsFound:
+                return "No connected apps found.\nMust have at least 1 app connected to sign in."
             }
         }
     }

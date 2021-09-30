@@ -9,9 +9,8 @@ import UIKit
 
 extension AppDetailViewController {
     func connectToApp(of type: Constants.AppType?) {
+        // TODO: update these to implement user OAuth flow
         switch type {
-        case .instagram:
-            ()
         case .twitter:
             connectToTwitter()
         case .youtube:
@@ -66,7 +65,7 @@ extension AppDetailViewController {
     }
     
     func connectToYoutube() {
-        let promptMessage = "Please enter your Channel Id (Profile -> Settings -> Advanced settings -> Channel ID) below:"
+        let promptMessage = "Please enter your YouTube Channel Id (Profile -> Settings -> Advanced settings -> Channel ID) below:"
         
         presentInputView(message: promptMessage) { action, channelId in
             if action.title != "Cancel" {
@@ -118,19 +117,16 @@ extension AppDetailViewController {
     
     fileprivate func presentInputView(message: String, completionHandler: @escaping ((UIAlertAction, String) -> Void)) {
         let alertVC = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+
         alertVC.addTextField { textField in
             textField.placeholder = "e.g @my_handle"
         }
         alertVC.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in completionHandler(action, "") }))
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
             if let textFieldText = alertVC.textFields?.first?.text {
-//                DispatchQueue.main.async {
-                    completionHandler(action, textFieldText)
-//                }
+                completionHandler(action, textFieldText)
             } else {
-//                DispatchQueue.main.async {
-                    completionHandler(action, "")
-//                }
+                completionHandler(action, "")
             }
         }))
         

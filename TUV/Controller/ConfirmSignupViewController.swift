@@ -43,11 +43,11 @@ class ConfirmSignupViewController: UIViewController {
         configureUI(signingUp: false)
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "confirmSignupSegue" {
-            HelperMethods.setAppsAuthSettings()
-        }
-    }
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        if segue.identifier == "confirmSignupSegue" {
+//            HelperMethods.setAppsAuthSettings()
+//        }
+//    }
 
     // MARK: Actions
     @IBAction func signupTapped(_ sender: UIButton) {
