@@ -21,6 +21,7 @@ class YoutubeViewController: UIViewController {
     @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var mediaImageView: UIImageView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var thumbnailButton: UIButton!
     @IBOutlet weak var errorLabel: UILabel!
     
@@ -38,6 +39,7 @@ class YoutubeViewController: UIViewController {
 
         self.navigationController?.navigationBar.barTintColor = self.view.backgroundColor
         thumbnailButton.isEnabled = false
+        activityIndicator.startAnimating()
         
         if friendUid.isEmpty {
             getCurrentUserFriendsUids()
@@ -53,8 +55,10 @@ class YoutubeViewController: UIViewController {
 
     // MARK: Functions
     func getCurrentUserFriendsUids() {
-        dbRference.child("users/\(currentUser.uid)/addedFriends").getData { error, snapshot in
-            if snapshot.exists() {
+        FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(currentUser.uid)/addedFriends") { timedout, error, snapshot in
+            if timedout {
+                self.updateMediaView(with: nil)
+            } else if let snapshot = snapshot {
                 let friendsUids = (snapshot.value as? [String: Bool])?.keys
                 let randomUserUid = friendsUids?.randomElement() ?? self.currentUser.uid
                 
@@ -68,19 +72,21 @@ class YoutubeViewController: UIViewController {
     }
     
     func getSnapshotForFriend(with userUid: String) {
-        dbRference.child("users/\(userUid)").getData { error, snapshot in
-            if snapshot.exists() {
+        FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(userUid)") { timedout, error, snapshot in
+            if timedout {
+                self.updateMediaView(with: nil)
+            } else if let snapshot = snapshot {
                 let friendData = snapshot.value as! [String: Any]
                 let connectedAppsData = friendData["connectedApps"] as? [String: Any]
 
                 self.displayUsernameAndAvatarForFriend(with: friendData)
                 self.userYoutubeData = connectedAppsData?["YouTube"] as? [String: String] ?? [:]
                 self.updateVideoViewWithUserExistingLatestVideo()
-            } else {
+                self.retrieveUserLatestVideo()
+           } else {
                 debugPrint("Unable to retrieve friend snapshot: \(error.debugDescription)")
+                self.retrieveUserLatestVideo()
             }
-            
-            self.retrieveUserLatestVideo()
         }
     }
     
@@ -153,6 +159,7 @@ class YoutubeViewController: UIViewController {
         guard let thumbnailUrl = thumbnailUrl else {
             errorLabel.text = "⚠️ Content unavailable"
             errorLabel.isHidden = false
+            activityIndicator.stopAnimating()
             return
         }
 
@@ -166,11 +173,15 @@ class YoutubeViewController: UIViewController {
             errorLabel.text = "⚠️ Download failed!"
             errorLabel.isHidden = false
         }
+        
+        activityIndicator.stopAnimating()
     }
     
     func setApiAuthorization() {
-        dbRference.child("apps/YouTube").getData { error, snapshot in
-            if snapshot.exists() {
+        FirebaseClient.retrieveDataFromFirebase(forPath: "apps/YouTube", withTimeout: 60) { timedout, error, snapshot in
+            if timedout {
+                debugPrint("Unable to retrieve app data for YouTube due to request timeout.")
+            } else if let snapshot = snapshot {
                 let youtubeData = snapshot.value as! [String: Any]
                 let apiKey = youtubeData["apiKey"] as? String
                 

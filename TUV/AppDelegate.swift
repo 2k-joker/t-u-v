@@ -13,8 +13,11 @@ import IQKeyboardManager
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // MARK: Configure Firebase
         FirebaseApp.configure()
+        Database.database().isPersistenceEnabled = true
+        
+        // MARK: Configure IQKeyboardManager
         IQKeyboardManager.shared().isEnabled = true
         IQKeyboardManager.shared().keyboardDistanceFromTextField = 20.0
         IQKeyboardManager.shared().isEnableAutoToolbar = true

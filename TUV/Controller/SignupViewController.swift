@@ -34,7 +34,6 @@ class SignupViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        unsubscribeFromKeyboardNotifications()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -88,21 +87,20 @@ class SignupViewController: UIViewController {
         } else {
             configureUserInteraction(busy: true)
             
-            Database.database().reference().child("users/\(sender.text!)").getData { error, snapshot in
-                if error != nil {
-                    DispatchQueue.main.async {
-                        self.configureUserInteraction(busy: false)
-                        self.updateErrorLabel(Constants.FormErrors.unverifiedUsername.message
-                        )
-                        sender.text!.removeAll()
-                    }
+            FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(sender.text!)") { timedout, error, snapshot in
+                if timedout {
+                    self.configureUserInteraction(busy: false)
+                    self.updateErrorLabel(Constants.UIAlertMessage.connectionTimeout.description)
+                } else if error != nil {
+                    self.configureUserInteraction(busy: false)
+                    self.updateErrorLabel(Constants.FormErrors.unverifiedUsername.message
+                    )
+                    sender.text!.removeAll()
 
-                } else if snapshot.exists() {
-                    DispatchQueue.main.async {
-                        self.configureUserInteraction(busy: false)
-                        self.updateErrorLabel(Constants.FormErrors.usernameTaken(sender.text!).message)
-                        sender.text!.removeAll()
-                    }
+                } else if snapshot != nil {
+                    self.configureUserInteraction(busy: false)
+                    self.updateErrorLabel(Constants.FormErrors.usernameTaken(sender.text!).message)
+                    sender.text!.removeAll()
                 } else {
                     self.configureUserInteraction(busy: false)
                     self.updateErrorLabel()
@@ -196,52 +194,5 @@ class SignupViewController: UIViewController {
         let valid = HelperMethods.validateInput(input: input, type: type)
         
         return !valid
-    }
-}
-
-extension SignupViewController: UITextFieldDelegate {
-    // MARK: Textfield Delegates
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        let subjectTextFields = [usernameTextField, passwordTextField, confirmPasswordTextField]
-        if subjectTextFields.contains(textField) {
-            subscribeToKeyboardNotifications()
-        } else {
-            unsubscribeFromKeyboardNotifications()
-        }
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-    
-    // MARK: Show/Hide Keyboard
-    @objc func keyboardWillHide(_ notification: Notification) {
-        view.frame.origin.y = 0
-    }
-    
-    @objc func keyboardWillShow(_ notification: Notification) {
-        if view.frame.origin.y == 0 {
-            view.frame.origin.y -= keyboardHeight(notification)
-        }
-    }
-
-    func keyboardHeight(_ notification: Notification) -> CGFloat {
-        let userInfo = notification.userInfo
-        let keyboardSize = userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! NSValue
-        return keyboardSize.cgRectValue.height
-    }
-    
-    func subscribeToKeyboardNotifications() {
-        subscribeToNotification(UIResponder.keyboardWillShowNotification, selector: #selector(keyboardWillShow(_:)))
-        subscribeToNotification(UIResponder.keyboardWillHideNotification, selector: #selector(keyboardWillHide(_:)))
-    }
-    
-    func subscribeToNotification(_ name: NSNotification.Name, selector: Selector) {
-        NotificationCenter.default.addObserver(self, selector: selector, name: name, object: nil)
-    }
-    
-    func unsubscribeFromKeyboardNotifications() {
-        NotificationCenter.default.removeObserver(self)
     }
 }

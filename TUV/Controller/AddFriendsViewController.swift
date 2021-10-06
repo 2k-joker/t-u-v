@@ -105,8 +105,10 @@ class AddFriendsViewController: UIViewController, ButtonDelegate {
         let tappedIndexPath = friendsTableView.indexPathForRow(at: buttonPosition)
 
         if let indexPath = tappedIndexPath {
-            dbReference.child("users/\(notAddedUsers[indexPath.row])").getData { error, snapshot in
-                if snapshot.exists() {
+            FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(notAddedUsers[indexPath.row])") { timedout, error, snapshot in
+                if timedout {
+                    self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+                } else if let snapshot = snapshot {
                     self.selectedUserUid = snapshot.key
 
                     self.performSegue(withIdentifier: "addFriendProfileSegue", sender: button)
@@ -178,8 +180,11 @@ extension AddFriendsViewController: UISearchBarDelegate {
     }
 
     func searchUsers(withUsernameMatching searchText: String) {
-        dbReference.child("users").getData { error, snapshot in
-            if snapshot.exists() {
+        FirebaseClient.retrieveDataFromFirebase(forPath: "users") { timedout, error, snapshot in
+            if timedout {
+                self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+                self.friendsTableView.reloadData()
+            } else if let snapshot = snapshot {
                 let allUsers = (snapshot.value as? [String: Any]) ?? [:]
                 let matchingUsersSnapshots = allUsers.filter {
                     let username = ($0.value as? [String: Any])?["username"] as? String ?? ""
@@ -212,10 +217,10 @@ extension AddFriendsViewController: UITableViewDelegate, UITableViewDataSource {
         cell.usernameLabel.text = "unknown"
         cell.detailsLabel.text = "no connected apps"
         
-        dbReference.child("users/\(userUid)").getData { error, snapshot in
-            if error != nil {
-                debugPrint(error.debugDescription)
-            } else if snapshot.exists() {
+        FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(userUid)") { timedout, error, snapshot in
+            if timedout {
+                self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+            } else if let snapshot = snapshot {
                 let userObject = snapshot.value as! [String:Any]
                 let avatarName = userObject["avatarName"] as! String
                 let username = userObject["username"] as! String
@@ -229,6 +234,8 @@ extension AddFriendsViewController: UITableViewDelegate, UITableViewDataSource {
                 if let connectAppsNames = connectAppsNames {
                     cell.detailsLabel.text = connectAppsNames.joined(separator: ", ")
                 }
+            } else {
+                debugPrint(error.debugDescription)
             }
         }
 
@@ -236,16 +243,19 @@ extension AddFriendsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        dbReference.child("users/\(notAddedUsers[indexPath.row])/connectedApps").getData { error, snapshot in
-            if snapshot.exists() {
+        FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(notAddedUsers[indexPath.row])/connectedApps") { timedout, error, snapshot in
+            tableView.deselectRow(at: indexPath, animated: true)
+
+            if timedout {
+                self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+            } else if let snapshot = snapshot {
                 self.selectedUserConnectedApps = snapshot
                 self.selectedUserUid = self.notAddedUsers[indexPath.row]
 
-                tableView.deselectRow(at: indexPath, animated: true)
                 self.performSegue(withIdentifier: "addFriendFeedSegue", sender: nil)
             } else {
-                tableView.deselectRow(at: indexPath, animated: true)
                 debugPrint(error.debugDescription)
+                self.presentErrorMessage(Constants.UIAlertMessage.noConnectedAppsFound.description)
             }
         }
     }

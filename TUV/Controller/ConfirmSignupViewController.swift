@@ -42,12 +42,6 @@ class ConfirmSignupViewController: UIViewController {
         termsAndPoliciesButton.setTitleColor(.lightGray, for: .disabled)
         configureUI(signingUp: false)
     }
-    
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "confirmSignupSegue" {
-//            HelperMethods.setAppsAuthSettings()
-//        }
-//    }
 
     // MARK: Actions
     @IBAction func signupTapped(_ sender: UIButton) {
@@ -88,7 +82,8 @@ class ConfirmSignupViewController: UIViewController {
                 self.presentSignupError()
                 Auth.auth().currentUser!.delete(completion: nil)
             } else {
-                HelperMethods.setUsername(to: self.userInfo["username"])
+                HelperMethods.setUserDefault(forKey: .usernameKey, withValue: self.userInfo["username"])
+                HelperMethods.setUserDefault(forKey: .emailKey, withValue: self.userInfo["email"])
                 self.configureUI(signingUp: false)
                 self.sendUserEmailVerification(for: user)
             }

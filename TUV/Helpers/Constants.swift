@@ -8,6 +8,11 @@
 import Foundation
 
 class Constants {
+    enum UserDefaultKey: String {
+        case usernameKey = "userName"
+        case emailKey = "email"
+    }
+
     enum AppType: String {
         case instagram = "Instagram"
         case twitter = "Twitter"
@@ -106,6 +111,7 @@ class Constants {
         case removeFriendFailed(String)
         case loadDataFailed
         case noConnectedAppsFound
+        case connectionTimeout
         
         var description: String {
             switch self {
@@ -126,7 +132,9 @@ class Constants {
             case .loadDataFailed:
                 return "Failed to load information.\nPlease check your connection and try again."
             case .noConnectedAppsFound:
-                return "No connected apps found.\nMust have at least 1 app connected to sign in."
+                return "No connected apps found.\nMust have at least 1 app connected."
+            case .connectionTimeout:
+                return "An error occured due to very poor or no internet connection."
             }
         }
     }

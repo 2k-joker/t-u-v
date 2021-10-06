@@ -32,6 +32,8 @@ extension AppDetailViewController {
         } else {
             presentErrorMessage()
         }
+        
+        activityIndicator.stopAnimating()
     }
 
     fileprivate func connectToTwitter() {
@@ -50,16 +52,22 @@ extension AppDetailViewController {
                                 debugPrint("Error updating user twitter info: \(error.debugDescription)")
                                 self.presentErrorMessage()
                             }
+                            
+                            self.activityIndicator.stopAnimating()
                         }
                     } else {
                         if let customError = error as? TwitterApiSchemas.ApiClientError {
                             self.presentErrorMessage(title: customError.title, message: customError.detail)
+                            self.activityIndicator.stopAnimating()
                         } else {
                             self.presentErrorMessage()
+                            self.activityIndicator.stopAnimating()
                         }
                     }
 
                 }
+            } else {
+                self.activityIndicator.stopAnimating()
             }
         }
     }
@@ -74,6 +82,7 @@ extension AppDetailViewController {
                         guard channelResponse.pageInfo.totalResults > 0 else {
                             let channelNotFoundError = "No such channel with Channel ID [\(channelId)]."
                             self.presentErrorMessage(message: channelNotFoundError)
+                            self.activityIndicator.stopAnimating()
                             return
                         }
                         
@@ -87,20 +96,29 @@ extension AppDetailViewController {
                                 debugPrint("Error updating user youtube info: \(error.debugDescription)")
                                 self.presentErrorMessage()
                             }
+                            
+                            self.activityIndicator.stopAnimating()
                         }
                     } else if let customError = error as? YoutubeApiSchemas.ApiClientErrorObject {
                         self.presentErrorMessage(message: customError.message)
+                        self.activityIndicator.stopAnimating()
                     } else {
                         self.presentErrorMessage()
+                        self.activityIndicator.stopAnimating()
                     }
                 }
+            } else {
+                self.activityIndicator.stopAnimating()
             }
         }
     }
     
     func getAppData(for appType: Constants.AppType, completionHandler: @escaping (([String:Any]?) -> Void)) {
-        dbReference.child("users/\(currentUser.uid)/connectedApps").getData { error, snapshot in
-            if snapshot.exists() {
+        FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(currentUser.uid)/connectedApps") { timedout, error, snapshot in
+            if timedout {
+                self.presentErrorMessage(title: nil, message: Constants.UIAlertMessage.connectionTimeout.description)
+                completionHandler(nil)
+            } else if let snapshot = snapshot {
                 let connectedAppsData = snapshot.value as? [String:Any]
                 let appData = connectedAppsData?[appType.rawValue] as? [String:String]
                 

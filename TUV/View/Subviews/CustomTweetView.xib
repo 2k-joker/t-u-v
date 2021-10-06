@@ -10,6 +10,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CustomTweetView" customModule="TUV" customModuleProvider="target">
             <connections>
+                <outlet property="activityIndicator" destination="6T4-ay-Z9e" id="n7k-Sa-yec"/>
                 <outlet property="likesCountLabel" destination="IUl-d3-xgf" id="riG-Ho-PCj"/>
                 <outlet property="repliesCountLabel" destination="wxd-It-AFc" id="uMD-fb-b63"/>
                 <outlet property="retweetsCountLabel" destination="xsu-j6-yFv" id="zVF-GS-50c"/>
@@ -22,6 +23,10 @@
             <rect key="frame" x="0.0" y="0.0" width="374" height="300"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="6T4-ay-Z9e">
+                    <rect key="frame" x="168.5" y="153.5" width="37" height="37"/>
+                    <color key="color" red="0.18666302009999999" green="0.38801147699999999" blue="0.68679526420000003" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                </activityIndicatorView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loading..." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1KZ-mX-nAG" userLabel="Tweet Label">
                     <rect key="frame" x="20" y="161.5" width="334" height="21.5"/>
                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
@@ -55,12 +60,14 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
+                <constraint firstItem="6T4-ay-Z9e" firstAttribute="centerX" secondItem="vUN-kp-3ea" secondAttribute="centerX" id="KPb-hd-bpV"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="V59-QY-atl" secondAttribute="bottom" constant="15" id="L2D-bm-E5e"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="1KZ-mX-nAG" secondAttribute="trailing" constant="20" id="RQD-UJ-E7s"/>
                 <constraint firstItem="1KZ-mX-nAG" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="20" id="dQU-3h-Fqa"/>
                 <constraint firstItem="1KZ-mX-nAG" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="jk5-w7-ZAa"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="V59-QY-atl" secondAttribute="trailing" constant="10" id="n86-iA-kKV"/>
                 <constraint firstItem="V59-QY-atl" firstAttribute="top" relation="greaterThanOrEqual" secondItem="1KZ-mX-nAG" secondAttribute="bottom" constant="30" id="sot-Qk-AQ1"/>
+                <constraint firstItem="6T4-ay-Z9e" firstAttribute="centerY" secondItem="vUN-kp-3ea" secondAttribute="centerY" id="tKF-dx-jkE"/>
                 <constraint firstItem="V59-QY-atl" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="xn0-KK-jba"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>

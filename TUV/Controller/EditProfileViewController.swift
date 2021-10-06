@@ -43,7 +43,7 @@ class EditProfileViewController: UIViewController {
         super.viewDidAppear(animated)
         configureProfileImageListener()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -59,7 +59,7 @@ class EditProfileViewController: UIViewController {
     
     // MARK: Actions
     @IBAction func cancelTapped(_ sender: UIButton) {
-        self.performSegue(withIdentifier: "userFeedSegue", sender: sender)
+        self.performSegue(withIdentifier: "editProfileCancelSegue", sender: sender)
     }
 
     @IBAction func updateAvatarTapped(_ sender: UIButton) {
@@ -75,13 +75,18 @@ class EditProfileViewController: UIViewController {
             configureUI(saving: false)
         } else {
             // Save changes
-            saveProfileUpdate()
-            configureUI(saving: false)
-
-            if (!emailTextField.text!.isEmpty) && (emailTextField.text! != currentUser.email) {
-                updateUserEmail(emailTextField.text!)
-            } else {
-                presentMessage(message: Constants.UIAlertMessage.updateSuccessful.description)
+            saveProfileUpdate { success in
+                if success {
+                    HelperMethods.setUserDefault(forKey: .usernameKey, withValue: self.usernameTextField.text!)
+                    self.presentMessage(message: Constants.UIAlertMessage.updateSuccessful.description)
+                    
+                    if (!self.emailTextField.text!.isEmpty) && (self.emailTextField.text! != self.currentUser.email) {
+                        self.configureUI(saving: true)
+                        self.updateUserEmail(self.emailTextField.text!)
+                    }
+                } else {
+                    self.presentMessage(message: Constants.UIAlertMessage.updateFailed.description)
+                }
             }
         }
     }
@@ -98,7 +103,7 @@ class EditProfileViewController: UIViewController {
         })
     }
 
-    func saveProfileUpdate() {
+    func saveProfileUpdate(completionHandler: @escaping ((Bool) -> Void)) {
         var updates: [String:String] = [:]
         let basePath = "users/\(currentUser.uid)"
         
@@ -117,12 +122,14 @@ class EditProfileViewController: UIViewController {
             updateUserPassword(passwordTextField.text!)
         }
         
-        dbReference.updateChildValues(updates) { error, reference in
-            if error != nil {
+        FirebaseClient.writeDataToFirebase(withNewData: updates) { timedout, error, reference in
+            if timedout {
+                self.presentMessage(message: Constants.UIAlertMessage.connectionTimeout.description)
+            } else if error != nil {
                 debugPrint(error.debugDescription)
-                self.presentMessage(message: Constants.UIAlertMessage.updateFailed.description)
+                completionHandler(false)
             } else {
-                HelperMethods.setUsername(to: self.usernameTextField.text!)
+                completionHandler(true)
             }
         }
     }
@@ -162,36 +169,48 @@ class EditProfileViewController: UIViewController {
     }
     
     func updateUserEmail(_ email: String) {
+        let timer = HelperMethods.configureTimeoutObserver {
+            self.presentMessage(message: Constants.UIAlertMessage.connectionTimeout.description)
+            self.presentFailedToUpdateEmailMessage()
+        }
+
         currentUser.updateEmail(to: email) { error in
+            timer.invalidate()
+
             if error != nil {
                 self.presentFailedToUpdateEmailMessage()
             } else {
                 let updates = ["users/\(self.currentUser.uid)/email": email]
                 
-                self.dbReference.updateChildValues(updates) { error, reference in
-                    if error != nil {
+                FirebaseClient.writeDataToFirebase(withNewData: updates) { timedout, error, reference in
+                    if timedout {
+                        self.presentMessage(message: Constants.UIAlertMessage.connectionTimeout.description)
+                        self.presentFailedToUpdateEmailMessage()
+                    } else if error != nil {
                         self.presentFailedToUpdateEmailMessage()
                     } else {
+                        HelperMethods.setUserDefault(forKey: .emailKey, withValue: email)
                         self.sendEmailVerificationLink()
                     }
                 }
-                
             }
         }
     }
     
     func sendEmailVerificationLink() {
+        let timer = HelperMethods.configureTimeoutObserver {
+            self.presentMessage(message: Constants.UIAlertMessage.connectionTimeout.description)
+        }
+
         currentUser.sendEmailVerification { error in
             if error != nil {
+                self.presentMessage(message: Constants.UIAlertMessage.authFailure(.sendVerificationLink).description)
                 self.presentFailedToUpdateEmailMessage()
             } else {
-                let alertMessage = [
-                    Constants.UIAlertMessage.updateSuccessful.description,
-                    Constants.UIAlertMessage.emailVerificationSent(self.currentUser.email!).description
-                ].joined(separator: "\n")
-                
-                self.presentMessage(message: alertMessage)
+                self.presentMessage(message: Constants.UIAlertMessage.emailVerificationSent(self.currentUser.email!).description)
             }
+            
+            timer.invalidate()
         }
     }
     
@@ -203,6 +222,7 @@ class EditProfileViewController: UIViewController {
         let alertVC = UIAlertController(title: nil, message: message, preferredStyle: .alert)
 
         alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+            self.configureUI(saving: false)
             self.resetUserInfoForm()
         }))
         

@@ -77,16 +77,19 @@
       "size" : "40x40"
     },
     {
+      "filename" : "tuv_icon_ipad.png",
       "idiom" : "ipad",
       "scale" : "1x",
       "size" : "76x76"
     },
     {
+      "filename" : "tuv_icon_ipad@2x.png",
       "idiom" : "ipad",
       "scale" : "2x",
       "size" : "76x76"
     },
     {
+      "filename" : "tuv_icon_ipad_pro.png",
       "idiom" : "ipad",
       "scale" : "2x",
       "size" : "83.5x83.5"

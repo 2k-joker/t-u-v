@@ -25,6 +25,7 @@ class PickAvatarViewController: UIViewController {
     // MARK: Outlets
     @IBOutlet weak var avatarPreviewImageView: UIImageView!
     @IBOutlet weak var avatarCollectionView: UICollectionView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var selectAvatarButton: UIButton!
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
     
@@ -47,7 +48,6 @@ class PickAvatarViewController: UIViewController {
     
     // MARK: Actions
     @IBAction func selectTapped(_ sender: UIButton) {
-        // TODO: Update current user's image
         let currentUser = Auth.auth().currentUser
         if let currentUser = currentUser {
             let update = ["users/\(currentUser.uid)/avatarName": currentAvatarName]
@@ -64,12 +64,18 @@ class PickAvatarViewController: UIViewController {
     }
     
     func updateUserAvatar(_ update: [String:String]) {
-        Database.database().reference().updateChildValues(update) { error, reference in
-            if error != nil {
+        activityIndicator.startAnimating()
+        
+        FirebaseClient.writeDataToFirebase(withNewData: update) { timedout, error, reference in
+            if timedout {
+                self.presentMessage(message: .connectionTimeout)
+            } else if error != nil {
                 self.presentMessage(message: .updateFailed)
             } else {
                 self.dismiss(animated: true, completion: nil)
             }
+            
+            self.activityIndicator.stopAnimating()
         }
     }
     

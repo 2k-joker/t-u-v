@@ -75,22 +75,30 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
     
     // MARK: Functions
     func getUserFriendsAndSegue() {
-        Database.database().reference().child("users/\(currentUser.uid)").getData { error, snapshot in
-            if error != nil {
+        FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(currentUser.uid)") { timedout, error, snapshot in
+            if timedout {
+                self.presentMessage(message: Constants.UIAlertMessage.connectionTimeout.description)
+            } else if error != nil {
                 debugPrint("Error getting user's friends: \(error.debugDescription)")
-            } else if snapshot.exists() {
-                let snapshotData = snapshot.value as! [String:Any]
+                
+                self.performSegue(withIdentifier: "friendsSegue", sender: nil)
+            } else {
+                let snapshotData = snapshot!.value as! [String:Any]
                 let addedFriends = snapshotData["addedFriends"] as? [String:Any]
 
                 self.currentUserFriends = addedFriends?.keys.map { $0 }
+                
+                self.performSegue(withIdentifier: "friendsSegue", sender: nil)
             }
-            
-            self.performSegue(withIdentifier: "friendsSegue", sender: nil)
         }
     }
+    
+    func presentMessage(message: String) {
+        let alertVC = UIAlertController(title: nil, message: message, preferredStyle: .alert)
 
-    private func newChildViewController(storyboardId: String) -> UIViewController {
-        return storyboard!.instantiateViewController(withIdentifier: storyboardId)
+        alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
+        self.present(alertVC, animated: true, completion: nil)
     }
     
     func configurePageControl() {
@@ -131,5 +139,9 @@ class FeedViewController: UIPageViewController, UIPageViewControllerDataSource, 
         }
         
         return feedChildViewControllers[nextIndex]
+    }
+
+    private func newChildViewController(storyboardId: String) -> UIViewController {
+        return storyboard!.instantiateViewController(withIdentifier: storyboardId)
     }
 }

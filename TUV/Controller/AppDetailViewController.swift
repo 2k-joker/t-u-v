@@ -27,6 +27,7 @@ class AppDetailViewController: UIViewController {
     @IBOutlet weak var favoriteButton: UIButton!
     @IBOutlet weak var connectVisitButton: UIButton!
     @IBOutlet weak var errorLabel: UILabel!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var connectionsNoticeLabel: UILabel!
     @IBOutlet weak var favoriteActionLabel: UILabel!
     @IBOutlet weak var favoriteStackView: UIStackView!
@@ -63,6 +64,8 @@ class AppDetailViewController: UIViewController {
     @IBAction func connectVisitTapped(_ sender: UIButton) {
         let appType = Constants.AppType.init(rawValue: selectedAppSnapshot.key)
 
+        activityIndicator.startAnimating()
+        
         if isCurrentUserConnected {
             visitApp(of: appType)
         } else {
@@ -86,7 +89,6 @@ class AppDetailViewController: UIViewController {
         dbReference.child("\(selectedAppsPath!)/\(selectedAppSnapshot.key)").removeValue { error, reference in
             if error != nil {
                 debugPrint(error.debugDescription)
-                // TODO: present alert message
             } else {
                 self.updateCurrentUserFavoriteApp(with: "N/A")
                 self.dismiss(animated: true, completion: nil)
@@ -111,7 +113,6 @@ class AppDetailViewController: UIViewController {
         dbReference.child("favoriteApps").updateChildValues([currentUser.uid: newFavoriteAppName]) { error, reference in
             if error != nil {
                 debugPrint(error.debugDescription)
-                // TODO: present alert
             }
         }
     }
@@ -120,7 +121,6 @@ class AppDetailViewController: UIViewController {
         dbReference.child("users/\(currentUser.uid)/connectedApps").updateChildValues([self.selectedAppSnapshot.key: newAppAppInfo]) { error, reference in
             if error != nil {
                 debugPrint(error.debugDescription)
-                // TODO: present alert message
             } else {
                 self.updateConnectedUsersForCurrentApp()
             }
@@ -131,7 +131,6 @@ class AppDetailViewController: UIViewController {
         dbReference.child("apps/\(selectedAppSnapshot.key)/connectedUsers").updateChildValues([currentUser.uid: true]) { error, reference in
             if error != nil {
                 debugPrint(error.debugDescription)
-                // TODO: present alert
             }
         }
     }
@@ -166,10 +165,19 @@ class AppDetailViewController: UIViewController {
     }
 
     func setIsCurrentUserFavorite() {
-        dbReference.child("favoriteApps").queryOrderedByKey().queryEqual(toValue: currentUser.uid).getData { error, snapshot in
-            if error != nil {
+        let query = dbReference.child("favoriteApps").queryOrderedByKey().queryEqual(toValue: currentUser.uid)
+        
+        FirebaseClient.retrieveDataFromFirebase(forQuery: query) { timedout, error, snapshot in
+            if timedout {
+                self.connectionsNoticeLabel.isHidden = true
+                self.errorLabel.text = Constants.UIAlertMessage.connectionTimeout.description
+                self.errorLabel.isHidden = false
+            } else if error != nil {
                 debugPrint(error.debugDescription)
-            } else if snapshot.exists() {
+                self.connectionsNoticeLabel.isHidden = true
+                self.errorLabel.text = Constants.UIAlertMessage.loadDataFailed.description
+                self.errorLabel.isHidden = false
+            } else if let snapshot = snapshot {
                 let currentUserfavoriteApp = (snapshot.value as! [String:String]).first!
                 
                 let favoriteAppName = currentUserfavoriteApp.value
@@ -182,20 +190,29 @@ class AppDetailViewController: UIViewController {
     }
 
     func setIsCurrentUserConnected() {
-        dbReference.child(selectedAppsPath).queryOrderedByKey().queryEqual(toValue: selectedAppSnapshot.key).getData { error, snapshot in
-            if error != nil {
+        let query = dbReference.child(selectedAppsPath).queryOrderedByKey().queryEqual(toValue: selectedAppSnapshot.key)
+        
+        FirebaseClient.retrieveDataFromFirebase(forQuery: query) { timedout, error, snapshot in
+            if timedout {
+                self.connectVisitButton.isEnabled = false
+                self.disconnectStackView.isHidden = true
+                self.favoriteStackView.isHidden = true
+                self.connectionsNoticeLabel.isHidden = true
+                self.errorLabel.text = Constants.UIAlertMessage.connectionTimeout.description
+                self.errorLabel.isHidden = false
+            } else if snapshot != nil {
+                self.isCurrentUserConnected = true
+                self.setConnectionsStatusLabelText()
+                self.setIsCurrentUserFavorite()
+            } else {
                 debugPrint(error.debugDescription)
                 self.connectVisitButton.isEnabled = false
                 self.disconnectStackView.isHidden = true
                 self.favoriteStackView.isHidden = true
+                self.connectionsNoticeLabel.isHidden = true
                 self.errorLabel.text = Constants.UIAlertMessage.loadDataFailed.description
                 self.errorLabel.isHidden = false
-            } else {
-                self.isCurrentUserConnected = snapshot.exists()
             }
-            
-            self.setConnectionsStatusLabelText()
-            self.setIsCurrentUserFavorite()
         }
     }
 

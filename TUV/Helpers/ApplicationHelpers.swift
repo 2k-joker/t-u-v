@@ -6,17 +6,19 @@
 //
 
 import UIKit
+import FirebaseDatabase
 
 class HelperMethods {
     static let usernameKey = "userName"
+    static let dbReference: DatabaseReference = Database.database().reference()
     
-    class func setUsername(to username: String?) {
-        UserDefaults.standard.setValue(username, forKey: HelperMethods.usernameKey)
+    class func setUserDefault(forKey key: Constants.UserDefaultKey, withValue value: String?) {
+        UserDefaults.standard.setValue(value, forKey: key.rawValue)
         UserDefaults.standard.synchronize()
     }
     
-    class func getUsername() -> String {
-        return UserDefaults.standard.string(forKey: HelperMethods.usernameKey) ?? ""
+    class func getUserDefault(forKey key: Constants.UserDefaultKey) -> String {
+        return UserDefaults.standard.string(forKey: key.rawValue) ?? ""
     }
 
     class func sanitizeText(_ text: String, characterSet: CharacterSet = .whitespacesAndNewlines) -> String {
@@ -56,6 +58,12 @@ class HelperMethods {
         
         attributedString.addAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 17)], range: rangeToBold)
         return attributedString
+    }
+    
+    class func configureTimeoutObserver(withTimeoutSeconds interval: TimeInterval = 30, completionHandler: @escaping (() -> Void)) -> Timer {
+        Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
+            completionHandler()
+        }
     }
 }
 

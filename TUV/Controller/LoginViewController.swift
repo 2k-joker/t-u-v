@@ -14,6 +14,7 @@ class LoginViewController: UIViewController {
     fileprivate let credsVerificationSegue = "verificationSegue"
     fileprivate var currentUser: User!
     fileprivate let dbReference = Database.database().reference()
+    fileprivate var currentUserEmail: String = ""
 
     // MARK: Outlets
     @IBOutlet weak var usernameTextField: UITextField!
@@ -32,7 +33,8 @@ class LoginViewController: UIViewController {
         super.viewWillAppear(animated)
         
         signupButton.setTitleColor(.lightGray, for: .disabled)
-        usernameTextField.text = HelperMethods.getUsername()
+        usernameTextField.text = HelperMethods.getUserDefault(forKey: .usernameKey)
+        currentUserEmail = HelperMethods.getUserDefault(forKey: .emailKey)
         passwordTextField.text?.removeAll()
         configureUI(loggingIn: false)
     }
@@ -50,17 +52,13 @@ class LoginViewController: UIViewController {
         if let validationError = validateLoginCreds() {
             configureUI(loggingIn: false)
             presentErrorMessage(validationError)
+        } else if !currentUserEmail.isEmpty {
+            loginUser(email: currentUserEmail)
         } else {
-            dbReference.child("users").queryOrdered(byChild: "username").queryEqual(toValue: usernameTextField.text).getData { error, snapshot in
+            findUserEmailByUsername { error, userEmail in
                 if error != nil {
-                    debugPrint(error.debugDescription)
-                    
                     self.presentErrorMessage(Constants.UIAlertMessage.authFailure(.login).description)
-                } else if snapshot.exists() {
-                    let snapshotObject = (snapshot.value as! [String:Any]).first!
-                    let userInfo = snapshotObject.value as! [String:Any]
-                    let userEmail = userInfo["email"] as! String
-
+                } else if let userEmail = userEmail {
                     self.loginUser(email: userEmail)
                 } else {
                     self.presentErrorMessage(Constants.UIAlertMessage.invalidLogin.description)
@@ -74,8 +72,37 @@ class LoginViewController: UIViewController {
     }
     
     // MARK: Functions
+    func findUserEmailByUsername(completionHandler: @escaping ((Error?, String?) -> Void)) {
+        let query = dbReference.child("users").queryOrdered(byChild: "username").queryEqual(toValue: usernameTextField.text)
+        
+        FirebaseClient.retrieveDataFromFirebase(forQuery: query) { timedout, error, snapshot in
+            if timedout {
+                self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+                completionHandler(nil, nil)
+                
+            } else if error != nil {
+                debugPrint(error.debugDescription)
+                completionHandler(error, nil)
+            } else {
+                let snapshotObject = (snapshot!.value as! [String:Any]).first!
+                let userInfo = snapshotObject.value as? [String:Any]
+                if let userEmail = userInfo?["email"] as? String {
+                    completionHandler(nil, userEmail)
+                } else {
+                    completionHandler(nil, nil)
+                }
+            }
+        }
+    }
+
     func loginUser(email: String) {
+        let timer = HelperMethods.configureTimeoutObserver {
+            self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+        }
+        
         Auth.auth().signIn(withEmail: email, password: passwordTextField.text!) { result, error in
+            timer.invalidate()
+
             if error == nil {
                 self.configureUI(loggingIn: false)
                 self.currentUser = result!.user
@@ -93,19 +120,27 @@ class LoginViewController: UIViewController {
             presentErrorMessage(Constants.UIAlertMessage.verifyEmail.description)
         }
     }
-    
+
     func checkCurrentUserHasConnectedApps() {
-        dbReference.child("users/\(currentUser.uid)/connectedApps").getData { error, snapshot in
-            if snapshot.exists() {
+        FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(currentUser.uid)/connectedApps") { timedout, error, snapshot in
+            if timedout {
+                self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+            } else if snapshot != nil {
                 self.performSegue(withIdentifier: "loginSegue", sender: nil)
             } else {
                 self.presentErrorMessage(Constants.UIAlertMessage.noConnectedAppsFound.description)
             }
         }
     }
-    
+
     func resendEmailVerification() {
+        let timer = HelperMethods.configureTimeoutObserver {
+            self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+        }
+
         currentUser.sendEmailVerification { error in
+            timer.invalidate()
+
             if error != nil {
                 self.presentErrorMessage(title: "Error", Constants.UIAlertMessage.authFailure(.sendVerificationLink).description)
             } else {
@@ -161,6 +196,7 @@ class LoginViewController: UIViewController {
         
         if message == Constants.UIAlertMessage.noConnectedAppsFound.description {
             alertVC.addAction(UIAlertAction(title: "Connect Apps", style: .default, handler: { action in
+                self.configureUI(loggingIn: false)
                 self.performSegue(withIdentifier: "loginToConnectAppsSegue", sender: nil)
             }))
         }
@@ -168,46 +204,3 @@ class LoginViewController: UIViewController {
         self.present(alertVC, animated: true, completion: nil)
     }
 }
-
-//extension LoginViewController: UITextFieldDelegate {
-//    // MARK: Textfield Delegates
-//    func textFieldDidBeginEditing(_ textField: UITextField) {
-//        subscribeToKeyboardNotifications()
-//    }
-//    
-//    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-//        textField.resignFirstResponder()
-//        
-//        return true
-//    }
-//    
-//    // MARK: Show/Hide Keyboard
-//    @objc func keyboardWillHide(_ notification: Notification) {
-//        view.frame.origin.y = 0
-//    }
-//    
-//    @objc func keyboardWillShow(_ notification: Notification) {
-//        if view.frame.origin.y == 0 {
-//            view.frame.origin.y -= keyboardHeight(notification)
-//        }
-//    }
-//
-//    func keyboardHeight(_ notification: Notification) -> CGFloat {
-//        let userInfo = notification.userInfo
-//        let keyboardSize = userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! NSValue
-//        return keyboardSize.cgRectValue.height
-//    }
-//    
-//    func subscribeToKeyboardNotifications() {
-//        subscribeToNotification(UIResponder.keyboardWillShowNotification, selector: #selector(keyboardWillShow(_:)))
-//        subscribeToNotification(UIResponder.keyboardWillHideNotification, selector: #selector(keyboardWillHide(_:)))
-//    }
-//    
-//    func subscribeToNotification(_ name: NSNotification.Name, selector: Selector) {
-//        NotificationCenter.default.addObserver(self, selector: selector, name: name, object: nil)
-//    }
-//    
-//    func unsubscribeFromKeyboardNotifications() {
-//        NotificationCenter.default.removeObserver(self)
-//    }
-//}

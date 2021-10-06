@@ -81,10 +81,6 @@ class FriendsViewController: UIViewController, ButtonDelegate {
     }
     
     // MARK: Functions
-    deinit {
-        removeFriendshipObservers()
-    }
-
     func configureFriendshipRemovedObserver() {
         _removedRefHandle = dbReference.child("friendships").observe(.childRemoved, with: { snapshot in
             let userUid = HelperMethods.splitFriendShipKey(snapshot.key).first!
@@ -105,8 +101,8 @@ class FriendsViewController: UIViewController, ButtonDelegate {
             let addedUid = HelperMethods.splitFriendShipKey(snapshot.key).last!
             
             if userUid == self.currentUser.uid {
-                self.addedFriendsUids.insert(addedUid, at: 0)
-                self.friendsTableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                self.addedFriendsUids.append(addedUid)
+                self.friendsTableView.insertRows(at: [IndexPath(row: self.addedFriendsUids.count - 1, section: 0)], with: .automatic)
             }
         })
     }
@@ -116,8 +112,10 @@ class FriendsViewController: UIViewController, ButtonDelegate {
         let indexPath = friendsTableView.indexPathForRow(at: buttonPosition)
 
         if let tappedIndexPath = indexPath {
-            dbReference.child("users/\(addedFriendsUids[tappedIndexPath.row])").getData { error, snapshot in
-                if snapshot.exists() {
+            FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(addedFriendsUids[tappedIndexPath.row])") { timedout, error, snapshot in
+                if timedout {
+                    self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+                } else if let snapshot = snapshot {
                     self.selectedFriendUid = snapshot.key
                     self.selectedFriendIndexPath = tappedIndexPath
 
@@ -131,10 +129,12 @@ class FriendsViewController: UIViewController, ButtonDelegate {
     }
 
     func getaddedCurrentUser() {
-        dbReference.child("friendships").queryOrderedByKey().queryEnding(atValue: currentUser.uid).getData { error, snapshot in
-            if error != nil {
-                debugPrint(error.debugDescription)
-            } else if snapshot.exists() {
+        let query = dbReference.child("friendships").queryOrderedByKey().queryEnding(atValue: currentUser.uid)
+        
+        FirebaseClient.retrieveDataFromFirebase(forQuery: query) { timedout, error, snapshot in
+            if timedout {
+                self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+            } else if let snapshot = snapshot {
                 let friendships = snapshot.value as? [String:String]
                 
                 if let friendships = friendships {
@@ -142,30 +142,44 @@ class FriendsViewController: UIViewController, ButtonDelegate {
                     
                     self.addedCurrentUser = Array(Set(uids).subtracting(Set(self.addedFriendsUids)))
                 }
+                
+                self.getOtherUsersAndSegue()
+            } else {
+                debugPrint(error.debugDescription)
+                self.getOtherUsersAndSegue()
             }
-
-            self.getOtherUsersAndSegue()
         }
     }
     
     func getOtherUsersAndSegue() {
-        dbReference.child("users").queryOrderedByKey().getData { error, snapshot in
-            if error != nil {
+        let query = dbReference.child("users").queryOrderedByKey()
+        
+        FirebaseClient.retrieveDataFromFirebase(forQuery: query) { timedout, error, snapshot in
+            if timedout {
+                self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+            } else if error != nil {
                 debugPrint(error.debugDescription)
-            } else if snapshot.exists() {
-                let uids = (snapshot.value as! [String:Any]).map { $0.key }
+                self.presentErrorMessage(Constants.UIAlertMessage.loadDataFailed.description)
+            } else {
+                let uids = (snapshot!.value as! [String:Any]).map { $0.key }
 
                 // everyone except for current user's friends and current user
                 self.otherUsers = Array(Set(uids).subtracting(Set(self.addedFriendsUids)).subtracting(Set([self.currentUser.uid])))
+                self.performSegue(withIdentifier: "addFriendsSegue", sender: nil)
             }
-            
-            self.performSegue(withIdentifier: "addFriendsSegue", sender: nil)
         }
     }
     
     func removeFriendshipObservers() {
         dbReference.child("friendships").removeObserver(withHandle: _addedRefHandle)
         dbReference.child("friendships").removeObserver(withHandle: _removedRefHandle)
+    }
+    
+    func presentErrorMessage(_ message: String) {
+        let alertVC = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        
+        self.present(alertVC, animated: true, completion: nil)
     }
 }
 
@@ -180,16 +194,18 @@ extension FriendsViewController: UITableViewDelegate, UITableViewDataSource {
         
         cell.tapDelegate = self
         cell.friendImageView.image = UIImage(named: "robot_avatar")
-        cell.usernameLabel.text = "username"
+        cell.usernameLabel.text = "unknown"
         cell.detailsLabel.text = ""
         
         // TODO: implement new content indicator
         cell.newContentIndicator.isHidden = true
-
-        dbReference.child("users/\(friendUid)").getData { error, snapshot in
-            if error != nil {
+        
+        FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(friendUid)") { timedout, error, snapshot in
+            if timedout {
+                self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+            } else if error != nil {
                 debugPrint("Error getting data for users/\(friendUid): \(error.debugDescription)")
-            } else if snapshot.exists() {
+            } else if let snapshot = snapshot {
                 let userData = snapshot.value as! [String:Any]
                 let userAddedFriends = userData["addedFriends"] as? [String: Any]
                 let currentUserUid = self.currentUser.uid
@@ -208,15 +224,19 @@ extension FriendsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        dbReference.child("users/\(addedFriendsUids[indexPath.row])/connectedApps").getData { error, snapshot in
-            if snapshot.exists() {
-                self.selectedFriendConnectedApps = snapshot
+        FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(addedFriendsUids[indexPath.row])/connectedApps") { timedout, error, snapshot in
+            tableView.deselectRow(at: indexPath, animated: true)
 
-                tableView.deselectRow(at: indexPath, animated: true)
+            if timedout {
+                self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+            } else if let snapshot = snapshot {
+                self.selectedFriendConnectedApps = snapshot
+                self.selectedFriendUid = self.addedFriendsUids[indexPath.row]
+
                 self.performSegue(withIdentifier: "friendFeedSegue", sender: nil)
             } else {
-                tableView.deselectRow(at: indexPath, animated: true)
                 debugPrint(error.debugDescription)
+                self.presentErrorMessage(Constants.UIAlertMessage.noConnectedAppsFound.description)
             }
         }
     }

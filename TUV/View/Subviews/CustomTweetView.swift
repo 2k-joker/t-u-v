@@ -12,6 +12,7 @@ class CustomTweetView: UIView {
     let nibName = "CustomTweetView"
     var contentView: UIView?
 
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var tweetLabel: UILabel!
     @IBOutlet weak var tweetMetricsStackView: UIStackView!
     @IBOutlet weak var likesCountLabel: UILabel!

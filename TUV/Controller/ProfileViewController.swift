@@ -77,14 +77,17 @@ class ProfileViewController: UIViewController {
 
     // MARK: Functions
     func getUserInfo() {
-        dbReference.child("users/\(userUid)").getData { error, snapshot in
-            if snapshot.exists() {
+        FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(userUid)", withTimeout: 15) { timedout, error, snapshot in
+            if timedout {
+                self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
+                self.userInfo = [:]
+            } else if let snapshot = snapshot {
                 self.userInfo = (snapshot.value as! [String:Any])
-                self.populateUserData()
             } else {
                 self.userInfo = [:]
-                self.populateUserData()
             }
+
+            self.populateUserData()
         }
     }
     
