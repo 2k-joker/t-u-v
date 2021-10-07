@@ -174,9 +174,7 @@ class AppDetailViewController: UIViewController {
                 self.errorLabel.isHidden = false
             } else if error != nil {
                 debugPrint(error.debugDescription)
-                self.connectionsNoticeLabel.isHidden = true
-                self.errorLabel.text = Constants.UIAlertMessage.loadDataFailed.description
-                self.errorLabel.isHidden = false
+                self.isCurrentUserFavorite = false
             } else if let snapshot = snapshot {
                 let currentUserfavoriteApp = (snapshot.value as! [String:String]).first!
                 
@@ -206,12 +204,11 @@ class AppDetailViewController: UIViewController {
                 self.setIsCurrentUserFavorite()
             } else {
                 debugPrint(error.debugDescription)
-                self.connectVisitButton.isEnabled = false
+                self.isCurrentUserConnected = false
+                self.connectVisitButton.isEnabled = true
                 self.disconnectStackView.isHidden = true
                 self.favoriteStackView.isHidden = true
                 self.connectionsNoticeLabel.isHidden = true
-                self.errorLabel.text = Constants.UIAlertMessage.loadDataFailed.description
-                self.errorLabel.isHidden = false
             }
         }
     }

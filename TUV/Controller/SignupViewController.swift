@@ -135,7 +135,22 @@ class SignupViewController: UIViewController {
         if let validationError = validateSignupForm() {
             updateErrorLabel(validationError)
         } else {
-            self.performSegue(withIdentifier: "signupNextSegue", sender: sender)
+            let query = HelperMethods.dbReference.child("users").queryOrdered(byChild: "username").queryEqual(toValue: usernameTextField.text)
+            
+            configureUserInteraction(busy: true)
+            
+            FirebaseClient.retrieveDataFromFirebase(forQuery: query) { timedout, error, snapshot in
+                if timedout {
+                    self.configureUserInteraction(busy: false)
+                    self.updateErrorLabel(Constants.UIAlertMessage.connectionTimeout.description)
+                } else if snapshot != nil {
+                    self.configureUserInteraction(busy: false)
+                    self.updateErrorLabel(Constants.FormErrors.usernameTaken(self.usernameTextField.text!).message)
+                } else {
+                    self.configureUserInteraction(busy: false)
+                    self.performSegue(withIdentifier: "signupNextSegue", sender: sender)
+                }
+            }
         }
     }
     

@@ -53,10 +53,8 @@ class LoginViewController: UIViewController {
             configureUI(loggingIn: false)
             presentErrorMessage(validationError)
         } else {
-            findUserEmailByUsername { error, userEmail in
-                if error != nil {
-                    self.presentErrorMessage(Constants.UIAlertMessage.authFailure(.login).description)
-                } else if let userEmail = userEmail {
+            findUserEmailByUsername { userEmail in
+                if let userEmail = userEmail {
                     self.loginUser(email: userEmail)
                 } else if !self.currentUserEmail.isEmpty {
                     self.loginUser(email: self.currentUserEmail)
@@ -72,24 +70,24 @@ class LoginViewController: UIViewController {
     }
     
     // MARK: Functions
-    func findUserEmailByUsername(completionHandler: @escaping ((Error?, String?) -> Void)) {
+    func findUserEmailByUsername(completionHandler: @escaping ((String?) -> Void)) {
         let query = dbReference.child("users").queryOrdered(byChild: "username").queryEqual(toValue: usernameTextField.text)
         
         FirebaseClient.retrieveDataFromFirebase(forQuery: query) { timedout, error, snapshot in
             if timedout {
                 self.presentErrorMessage(Constants.UIAlertMessage.connectionTimeout.description)
-                completionHandler(nil, nil)
-                
+                completionHandler(nil)
+
             } else if error != nil {
                 debugPrint(error.debugDescription)
-                completionHandler(error, nil)
+                completionHandler(nil)
             } else {
                 let snapshotObject = (snapshot!.value as! [String:Any]).first!
                 let userInfo = snapshotObject.value as? [String:Any]
                 if let userEmail = userInfo?["email"] as? String {
-                    completionHandler(nil, userEmail)
+                    completionHandler(userEmail)
                 } else {
-                    completionHandler(nil, nil)
+                    completionHandler(nil)
                 }
             }
         }
