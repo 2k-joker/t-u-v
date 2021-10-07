@@ -52,14 +52,14 @@ class LoginViewController: UIViewController {
         if let validationError = validateLoginCreds() {
             configureUI(loggingIn: false)
             presentErrorMessage(validationError)
-        } else if  false && !currentUserEmail.isEmpty {
-            loginUser(email: currentUserEmail)
         } else {
             findUserEmailByUsername { error, userEmail in
                 if error != nil {
                     self.presentErrorMessage(Constants.UIAlertMessage.authFailure(.login).description)
                 } else if let userEmail = userEmail {
                     self.loginUser(email: userEmail)
+                } else if !self.currentUserEmail.isEmpty {
+                    self.loginUser(email: self.currentUserEmail)
                 } else {
                     self.presentErrorMessage(Constants.UIAlertMessage.invalidLogin.description)
                 }
@@ -106,6 +106,7 @@ class LoginViewController: UIViewController {
             if error == nil {
                 self.configureUI(loggingIn: false)
                 self.currentUser = result!.user
+                HelperMethods.setUserDefault(forKey: .usernameKey, withValue: self.usernameTextField.text!)
                 self.checkCurrentUserEmailVerified()
             } else {
                 self.presentErrorMessage(Constants.UIAlertMessage.invalidLogin.description)
