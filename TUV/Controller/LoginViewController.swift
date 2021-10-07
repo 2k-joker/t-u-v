@@ -52,7 +52,7 @@ class LoginViewController: UIViewController {
         if let validationError = validateLoginCreds() {
             configureUI(loggingIn: false)
             presentErrorMessage(validationError)
-        } else if !currentUserEmail.isEmpty {
+        } else if  false && !currentUserEmail.isEmpty {
             loginUser(email: currentUserEmail)
         } else {
             findUserEmailByUsername { error, userEmail in

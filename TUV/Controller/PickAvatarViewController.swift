@@ -58,9 +58,11 @@ class PickAvatarViewController: UIViewController {
     // MARK: Functions
     func configureFlowLayout() {
         let space:CGFloat = 3.0
+        let dimension = (avatarCollectionView.frame.size.width - (2 * space)) / 3.0
         
         flowLayout.minimumInteritemSpacing = space
         flowLayout.minimumLineSpacing = space
+        flowLayout.itemSize = CGSize(width: dimension, height: dimension)
     }
     
     func updateUserAvatar(_ update: [String:String]) {

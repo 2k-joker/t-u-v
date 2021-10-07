@@ -45,7 +45,7 @@ class FirebaseClient {
 
                 completionHandler(false, nil, snapshot)
             } else {
-                let error = NSError(domain: "Failed to load data for query: \(query)", code: 404, userInfo: nil) as Error
+                let error = NSError(domain: "Failed to load data for query: \(query.debugDescription)", code: 404, userInfo: nil) as Error
                 completionHandler(false, error, nil)
             }
         }

@@ -87,23 +87,21 @@ class SignupViewController: UIViewController {
         } else {
             configureUserInteraction(busy: true)
             
-            FirebaseClient.retrieveDataFromFirebase(forPath: "users/\(sender.text!)") { timedout, error, snapshot in
+            let query = HelperMethods.dbReference.child("users").queryOrdered(byChild: "username").queryEqual(toValue: sender.text)
+            
+            FirebaseClient.retrieveDataFromFirebase(forQuery: query) { timedout, error, snapshot in
                 if timedout {
                     self.configureUserInteraction(busy: false)
                     self.updateErrorLabel(Constants.UIAlertMessage.connectionTimeout.description)
-                } else if error != nil {
+                } else if snapshot == nil {
+                    debugPrint(error.debugDescription)
                     self.configureUserInteraction(busy: false)
-                    self.updateErrorLabel(Constants.FormErrors.unverifiedUsername.message
-                    )
-                    sender.text!.removeAll()
+                    self.updateErrorLabel()
 
-                } else if snapshot != nil {
+                } else {
                     self.configureUserInteraction(busy: false)
                     self.updateErrorLabel(Constants.FormErrors.usernameTaken(sender.text!).message)
                     sender.text!.removeAll()
-                } else {
-                    self.configureUserInteraction(busy: false)
-                    self.updateErrorLabel()
                 }
             }
         }
