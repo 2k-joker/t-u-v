@@ -1,3 +1,6 @@
 # Ignore project and workspace
 /TUV.xc*
 /.DS_Store
+
+# Ignore .plist files
+/TUV/TUV/Property Lists/*.plist

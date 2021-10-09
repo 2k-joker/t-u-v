@@ -26,8 +26,18 @@ class FirebaseClient {
 
                 completionHandler(false, nil, snapshot)
             } else {
-                let error = NSError(domain: "Failed to load data for path: \(pathString)", code: 404, userInfo: nil) as Error
-                completionHandler(false, error, nil)
+                dbReference.child(pathString).getData { error, snapshot in
+                    if snapshot.exists() {
+                        dbReference.child(pathString).keepSynced(true)
+                        
+                        completionHandler(false, nil, snapshot)
+                    } else if error != nil {
+                        completionHandler(false, error, nil)
+                    } else {
+                        let error = NSError(domain: "Failed to load data for path: \(pathString)", code: 404, userInfo: nil) as Error
+                        completionHandler(false, error, nil)
+                    }
+                }
             }
         }
     }
@@ -45,8 +55,18 @@ class FirebaseClient {
 
                 completionHandler(false, nil, snapshot)
             } else {
-                let error = NSError(domain: "Failed to load data for query: \(query.debugDescription)", code: 404, userInfo: nil) as Error
-                completionHandler(false, error, nil)
+                query.getData { error, snapshot in
+                    if snapshot.exists() {
+                        query.keepSynced(true)
+                        
+                        completionHandler(false, nil, snapshot)
+                    } else if error != nil {
+                        completionHandler(false, error, nil)
+                    } else {
+                        let error = NSError(domain: "Failed to load data for query: \(query.debugDescription)", code: 404, userInfo: nil) as Error
+                        completionHandler(false, error, nil)
+                    }
+                }
             }
         }
     }
